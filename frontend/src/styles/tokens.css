@@ -1,0 +1,95 @@
+:root {
+  /* Colors */
+  --color-sidebar-bg: #12172B;
+  --color-sidebar-hover: #1E2640;
+  --color-sidebar-active: #2A365C;
+  --color-sidebar-text: #94A3B8;
+  --color-sidebar-text-active: #FFFFFF;
+
+  --color-canvas-bg: #F7F8FB;
+  --color-card-bg: #FFFFFF;
+  --color-card-border: #E2E8F0;
+
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94A3B8;
+
+  --color-primary: #4F46E5;
+  --color-primary-hover: #4338CA;
+  --color-primary-light: #EEF2FF;
+
+  /* Status Colors */
+  --status-draft-text: #4B5563;
+  --status-draft-bg: #F3F4F6;
+  --status-draft-border: #E5E7EB;
+
+  --status-submitted-text: #1D4ED8;
+  --status-submitted-bg: #EFF6FF;
+  --status-submitted-border: #BFDBFE;
+
+  --status-correction-text: #B45309;
+  --status-correction-bg: #FFFBEB;
+  --status-correction-border: #FDE68A;
+
+  --status-approved-text: #15803D;
+  --status-approved-bg: #F0FDF4;
+  --status-approved-border: #BBF7D0;
+
+  /* Typography */
+  --font-family-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-heading: 'Outfit', 'Inter', sans-serif;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family-body);
+  background-color: var(--color-canvas-bg);
+  color: var(--color-text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+button {
+  font-family: var(--font-family-body);
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+input, select, textarea {
+  font-family: var(--font-family-body);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
