@@ -10,6 +10,7 @@ export default function Button({
   type = 'button',
   onClick,
   className = '',
+  style = {},
   ...props
 }) {
   const baseStyle = {
@@ -17,30 +18,32 @@ export default function Button({
     alignItems: 'center',
     justifyContent: 'center',
     gap: '8px',
-    fontWeight: '500',
+    fontWeight: '600',
     borderRadius: 'var(--radius-sm)',
-    transition: 'all 0.15s ease-in-out',
+    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
     cursor: disabled || isLoading ? 'not-allowed' : 'pointer',
-    opacity: disabled || isLoading ? 0.6 : 1,
-    whiteSpace: 'nowrap'
+    opacity: disabled || isLoading ? 0.65 : 1,
+    whiteSpace: 'nowrap',
+    outline: 'none',
+    border: 'none'
   };
 
   const sizes = {
-    sm: { padding: '6px 12px', fontSize: '0.8125rem' },
-    md: { padding: '9px 16px', fontSize: '0.875rem' },
-    lg: { padding: '12px 20px', fontSize: '1rem' }
+    sm: { padding: '7px 14px', fontSize: '0.8125rem' },
+    md: { padding: '10px 18px', fontSize: '0.875rem' },
+    lg: { padding: '13px 24px', fontSize: '1rem' }
   };
 
   const variants = {
     primary: {
-      backgroundColor: 'var(--color-primary)',
+      background: 'linear-gradient(135deg, #4F46E5 0%, #6366F1 100%)',
       color: '#FFFFFF',
-      border: 'none',
+      boxShadow: '0 4px 14px 0 rgba(79, 70, 229, 0.35)',
     },
     secondary: {
-      backgroundColor: '#E2E8F0',
-      color: '#1E293B',
-      border: 'none',
+      backgroundColor: '#F1F5F9',
+      color: '#0F172A',
+      border: '1px solid #E2E8F0',
     },
     outline: {
       backgroundColor: 'transparent',
@@ -48,14 +51,13 @@ export default function Button({
       border: '1px solid var(--color-card-border)',
     },
     danger: {
-      backgroundColor: '#EF4444',
+      background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
       color: '#FFFFFF',
-      border: 'none',
+      boxShadow: '0 4px 14px 0 rgba(239, 68, 68, 0.35)',
     },
     ghost: {
       backgroundColor: 'transparent',
       color: 'var(--color-text-secondary)',
-      border: 'none',
     }
   };
 
@@ -64,14 +66,27 @@ export default function Button({
       type={type}
       disabled={disabled || isLoading}
       onClick={onClick}
-      style={{ ...baseStyle, ...sizes[size], ...variants[variant] }}
+      style={{
+        ...baseStyle,
+        ...sizes[size],
+        ...variants[variant],
+        ...style
+      }}
       className={className}
       {...props}
     >
       {isLoading ? (
-        <span style={{ display: 'inline-block', width: '14px', height: '14px', border: '2px solid currentColor', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <span style={{
+          display: 'inline-block',
+          width: '16px',
+          height: '16px',
+          border: '2px solid currentColor',
+          borderTopColor: 'transparent',
+          borderRadius: '50%',
+          animation: 'spin 0.8s linear infinite'
+        }} />
       ) : Icon ? (
-        <Icon size={16} />
+        <Icon size={size === 'sm' ? 14 : size === 'lg' ? 18 : 16} />
       ) : null}
       {children}
     </button>
