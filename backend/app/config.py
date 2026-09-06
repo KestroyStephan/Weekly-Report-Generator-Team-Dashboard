@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     
     AI_PROVIDER: str = "ollama"  # "ollama" or "grok"
     OLLAMA_BASE_URL: str = "http://localhost:11434"
-    OLLAMA_MODEL: str = "llama3"
+    OLLAMA_MODEL: str = "qwen2:0.5b"
     GROK_API_KEY: str = ""
     GROK_MODEL: str = "grok-beta"
 
