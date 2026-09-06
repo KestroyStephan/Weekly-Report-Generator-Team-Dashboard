@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
+import logoImg from '../../assets/Logo.png';
 import {
   FileText,
   BarChart3,
@@ -40,30 +41,24 @@ export default function Sidebar() {
       top: 0,
       flexShrink: 0
     }}>
-      {/* Brand Header */}
+      {/* Brand Header with Centered Large Logo.png */}
       <div style={{
         padding: '24px 20px',
         borderBottom: '1px solid rgba(255,255,255,0.08)',
         display: 'flex',
-        alignItems: 'center',
-        gap: '12px'
+        justifyContent: 'center',
+        alignItems: 'center'
       }}>
-        <div style={{
-          width: '36px',
-          height: '36px',
-          borderRadius: '8px',
-          backgroundColor: 'var(--color-primary)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#FFFFFF'
-        }}>
-          <Sparkles size={20} />
-        </div>
-        <div>
-          <h2 style={{ fontSize: '1rem', fontWeight: '700', color: '#FFFFFF', fontFamily: 'var(--font-family-heading)' }}>Team Pulse</h2>
-          <span style={{ fontSize: '0.75rem', color: 'var(--color-sidebar-text)' }}>Weekly Report Hub</span>
-        </div>
+        <img
+          src={logoImg}
+          alt="WorkPulse Logo"
+          style={{
+            height: '52px',
+            width: 'auto',
+            maxHeight: '52px',
+            objectFit: 'contain'
+          }}
+        />
       </div>
 
       {/* Navigation List */}
