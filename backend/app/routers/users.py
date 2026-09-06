@@ -36,6 +36,7 @@ async def create_user(
     user_in: UserCreate,
     current_user: User = Depends(require_role("manager", "admin"))
 ):
+    import secrets
     existing_user = await User.find_one(User.email == user_in.email)
     if existing_user:
         raise HTTPException(
@@ -44,21 +45,27 @@ async def create_user(
         )
     
     role = user_in.role if user_in.role else "member"
+    invite_token = secrets.token_urlsafe(24)
+    raw_pass = user_in.password if user_in.password else secrets.token_urlsafe(16)
     
     user = User(
         name=user_in.name,
         email=user_in.email,
-        password_hash=hash_password(user_in.password),
-        role=role
+        password_hash=hash_password(raw_pass),
+        role=role,
+        invite_token=invite_token
     )
     await user.insert()
+    
+    invitation_link = f"http://localhost:5173/setup-password?token={invite_token}&email={user.email}"
     
     return UserOut(
         id=str(user.id),
         name=user.name,
         email=user.email,
         role=user.role,
-        created_at=user.created_at
+        created_at=user.created_at,
+        invitation_link=invitation_link
     )
 
 @router.get("/{user_id}", response_model=UserOut)
@@ -107,4 +114,28 @@ async def delete_user(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     await user.delete()
     return None
+
+@router.post("/{user_id}/reset-password")
+async def reset_user_password(
+    user_id: str,
+    current_user: User = Depends(require_role("admin", "manager"))
+):
+    import secrets
+    user = await User.get(user_id)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    
+    invite_token = secrets.token_urlsafe(24)
+    user.invite_token = invite_token
+    await user.save()
+    
+    invitation_link = f"http://localhost:5173/setup-password?token={invite_token}&email={user.email}"
+    
+    return {
+        "message": f"Password reset email sent to {user.email}",
+        "email": user.email,
+        "name": user.name,
+        "invitation_link": invitation_link
+    }
+
 

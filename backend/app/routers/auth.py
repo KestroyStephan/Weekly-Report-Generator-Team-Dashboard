@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel, EmailStr
 
 from app.models.user import User
-from app.schemas.user import UserCreate, UserLogin, UserOut
+from app.schemas.user import UserCreate, UserLogin, UserOut, SetupPasswordRequest
 from app.services.auth_service import hash_password, verify_password, create_access_token, create_refresh_token, decode_token
 from app.deps import get_current_user
 from app.config import settings
@@ -126,3 +126,19 @@ async def get_me(current_user: User = Depends(get_current_user)):
         role=current_user.role,
         created_at=current_user.created_at
     )
+
+@router.post("/setup-password")
+async def setup_password(data: SetupPasswordRequest):
+    user = await User.find_one(User.email == data.email)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    
+    if user.invite_token and user.invite_token != data.token:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired setup token")
+    
+    user.password_hash = hash_password(data.password)
+    user.invite_token = None
+    await user.save()
+    
+    return {"message": "Password setup successfully. You can now login to your account."}
+

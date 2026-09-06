@@ -5,7 +5,7 @@ from pydantic import BaseModel, EmailStr, ConfigDict
 class UserCreate(BaseModel):
     name: str
     email: EmailStr
-    password: str
+    password: Optional[str] = None
     role: Optional[str] = "member"
 
 class UserLogin(BaseModel):
@@ -20,6 +20,13 @@ class UserOut(BaseModel):
     email: str
     role: str
     created_at: datetime
+    invitation_link: Optional[str] = None
 
 class UserRoleUpdate(BaseModel):
     role: str
+
+class SetupPasswordRequest(BaseModel):
+    email: EmailStr
+    token: str
+    password: str
+

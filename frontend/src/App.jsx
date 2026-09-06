@@ -9,6 +9,7 @@ import AppLayout from './components/layout/AppLayout';
 
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import SetupPasswordPage from './pages/SetupPasswordPage';
 import MyReportPage from './pages/MyReportPage';
 import ReportHistoryPage from './pages/ReportHistoryPage';
 import ReportDetailPage from './pages/ReportDetailPage';
@@ -42,6 +43,7 @@ export default function App() {
           {/* Public Auth Routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<Navigate to="/login" replace />} />
+          <Route path="/setup-password" element={<SetupPasswordPage />} />
 
           {/* Protected Application Routes */}
           <Route element={<ProtectedRoute />}>

@@ -1,12 +1,12 @@
 :root {
   /* Colors */
-  --color-sidebar-bg: #12172B;
-  --color-sidebar-hover: #1E2640;
-  --color-sidebar-active: #2A365C;
-  --color-sidebar-text: #94A3B8;
+  --color-sidebar-bg: #042316;
+  --color-sidebar-hover: #073320;
+  --color-sidebar-active: #0C422B;
+  --color-sidebar-text: #95B5A0;
   --color-sidebar-text-active: #FFFFFF;
 
-  --color-canvas-bg: #F7F8FB;
+  --color-canvas-bg: #F4F7F6;
   --color-card-bg: #FFFFFF;
   --color-card-border: #E2E8F0;
 
@@ -14,9 +14,9 @@
   --color-text-secondary: #475569;
   --color-text-muted: #94A3B8;
 
-  --color-primary: #4F46E5;
-  --color-primary-hover: #4338CA;
-  --color-primary-light: #EEF2FF;
+  --color-primary: #0D8A6A;
+  --color-primary-hover: #0B7A5D;
+  --color-primary-light: #E6F4F0;
 
   /* Status Colors */
   --status-draft-text: #4B5563;

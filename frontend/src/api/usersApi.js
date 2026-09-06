@@ -24,5 +24,9 @@ export const usersApi = {
   deleteUser: async (id) => {
     const response = await axiosClient.delete(`/users/${id}`);
     return response.data;
+  },
+  resetUserPassword: async (id) => {
+    const response = await axiosClient.post(`/users/${id}/reset-password`);
+    return response.data;
   }
 };

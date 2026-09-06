@@ -48,24 +48,26 @@ export default function ChatWidget() {
   };
 
   return (
-    <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 1500 }}>
+    <div style={{ position: 'fixed', bottom: '20px', right: '24px', zIndex: 1500 }}>
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
           style={{
-            width: '54px',
-            height: '54px',
+            width: '52px',
+            height: '52px',
             borderRadius: '50%',
-            backgroundColor: 'var(--color-primary)',
+            backgroundColor: '#0D8A6A',
             color: '#FFFFFF',
-            boxShadow: 'var(--shadow-lg)',
+            boxShadow: '0 8px 24px rgba(13, 138, 106, 0.4), 0 2px 6px rgba(0, 0, 0, 0.1)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            border: 'none',
-            transition: 'transform 0.15s ease'
+            border: '2px solid #FFFFFF',
+            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
+          onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.08)'}
+          onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
           title="Open AI Team Assistant"
         >
           <Bot size={26} />
@@ -78,7 +80,7 @@ export default function ChatWidget() {
           height: '520px',
           backgroundColor: '#FFFFFF',
           borderRadius: 'var(--radius-lg)',
-          boxShadow: 'var(--shadow-lg)',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
           border: '1px solid var(--color-card-border)',
           display: 'flex',
           flexDirection: 'column',
@@ -87,17 +89,17 @@ export default function ChatWidget() {
           {/* Widget Header */}
           <div style={{
             padding: '14px 16px',
-            backgroundColor: 'var(--color-sidebar-bg)',
+            background: 'linear-gradient(135deg, #022C22 0%, #064E3B 100%)',
             color: '#FFFFFF',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Sparkles size={18} style={{ color: '#818CF8' }} />
+              <Sparkles size={18} style={{ color: '#34D399' }} />
               <div>
                 <h4 style={{ fontSize: '0.9375rem', fontWeight: '600', color: '#FFFFFF' }}>AI Team Assistant</h4>
-                <span style={{ fontSize: '0.70rem', color: '#94A3B8' }}>Ollama / Grok RAG Engine</span>
+                <span style={{ fontSize: '0.70rem', color: '#A7F3D0' }}>Ollama / Grok RAG Engine</span>
               </div>
             </div>
             <button
@@ -161,7 +163,7 @@ export default function ChatWidget() {
                 width: '36px',
                 height: '36px',
                 borderRadius: 'var(--radius-sm)',
-                backgroundColor: 'var(--color-primary)',
+                backgroundColor: '#0D8A6A',
                 color: '#FFFFFF',
                 border: 'none',
                 cursor: isLoading || !input.trim() ? 'not-allowed' : 'pointer',

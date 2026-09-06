@@ -9,15 +9,12 @@ import {
   FolderKanban,
   Users,
   Settings,
-  ShieldCheck,
-  UserCheck,
-  Sparkles
+  UserCheck
 } from 'lucide-react';
 
 export default function Sidebar() {
   const { user } = useAuthStore();
   const isManagerOrAdmin = user?.role === 'manager' || user?.role === 'admin';
-  const isAdmin = user?.role === 'admin';
 
   const navItems = [
     { label: 'My Report', path: '/my-report', icon: FileText, roles: ['member', 'manager', 'admin'] },
@@ -32,8 +29,8 @@ export default function Sidebar() {
   return (
     <aside style={{
       width: '260px',
-      backgroundColor: 'var(--color-sidebar-bg)',
-      color: 'var(--color-sidebar-text)',
+      backgroundColor: '#042316',
+      color: '#95B5A0',
       display: 'flex',
       flexDirection: 'column',
       height: '100vh',
@@ -41,10 +38,10 @@ export default function Sidebar() {
       top: 0,
       flexShrink: 0
     }}>
-      {/* Brand Header with Centered Large Logo.png */}
+      {/* Brand Header */}
       <div style={{
         padding: '24px 20px',
-        borderBottom: '1px solid rgba(255,255,255,0.08)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center'
@@ -61,7 +58,7 @@ export default function Sidebar() {
         />
       </div>
 
-      {/* Navigation List */}
+      {/* Navigation Menu */}
       <nav style={{ padding: '20px 12px', flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
         {navItems.map((item) => {
           if (!item.roles.includes(user?.role || 'member')) return null;
@@ -73,44 +70,46 @@ export default function Sidebar() {
               style={({ isActive }) => ({
                 display: 'flex',
                 alignItems: 'center',
-                gap: '12px',
-                padding: '10px 14px',
-                borderRadius: 'var(--radius-sm)',
+                gap: '14px',
+                padding: '12px 16px',
+                borderRadius: '10px',
                 fontSize: '0.875rem',
-                fontWeight: isActive ? '600' : '400',
-                color: isActive ? 'var(--color-sidebar-text-active)' : 'var(--color-sidebar-text)',
-                backgroundColor: isActive ? 'var(--color-sidebar-active)' : 'transparent',
-                transition: 'background-color 0.15s ease'
+                fontWeight: isActive ? '700' : '500',
+                color: isActive ? '#FFFFFF' : '#95B5A0',
+                backgroundColor: isActive ? '#0C422B' : 'transparent',
+                transition: 'all 0.15s ease'
               })}
             >
-              <Icon size={18} />
-              {item.label}
+              <Icon size={19} />
+              <span>{item.label}</span>
             </NavLink>
           );
         })}
       </nav>
 
-      {/* Footer Role Badge */}
+      {/* Footer User Info */}
       <div style={{
-        padding: '16px 20px',
-        borderTop: '1px solid rgba(255,255,255,0.08)',
+        padding: '18px 20px',
+        borderTop: '1px solid rgba(255, 255, 255, 0.06)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#0D1120'
+        backgroundColor: '#02190F'
       }}>
         <div>
-          <p style={{ fontSize: '0.875rem', fontWeight: '600', color: '#FFFFFF' }}>{user?.name}</p>
-          <p style={{ fontSize: '0.75rem', color: 'var(--color-sidebar-text)' }}>{user?.email}</p>
+          <p style={{ fontSize: '0.875rem', fontWeight: '700', color: '#FFFFFF', margin: 0 }}>{user?.name}</p>
+          <p style={{ fontSize: '0.75rem', color: '#7DE8B5', margin: 0 }}>{user?.email}</p>
         </div>
         <span style={{
           fontSize: '0.6875rem',
-          fontWeight: '700',
-          padding: '2px 8px',
+          fontWeight: '800',
+          padding: '4px 10px',
           borderRadius: '12px',
-          backgroundColor: isManagerOrAdmin ? '#312E81' : '#1E293B',
-          color: isManagerOrAdmin ? '#C7D2FE' : '#94A3B8',
-          textTransform: 'uppercase'
+          backgroundColor: isManagerOrAdmin ? '#0C422B' : '#072E1E',
+          color: isManagerOrAdmin ? '#7DE8B5' : '#95B5A0',
+          border: isManagerOrAdmin ? '1px solid #146B46' : '1px solid rgba(255,255,255,0.08)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em'
         }}>
           {user?.role}
         </span>

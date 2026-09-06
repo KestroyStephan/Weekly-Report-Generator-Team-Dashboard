@@ -30,7 +30,7 @@ export default function AppLayout() {
       <Sidebar />
       <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <Topbar title={getTitle(location.pathname)} />
-        <main style={{ padding: '28px', flexGrow: 1 }}>
+        <main style={{ padding: '28px 28px 90px 28px', flexGrow: 1 }}>
           <Outlet />
         </main>
       </div>
