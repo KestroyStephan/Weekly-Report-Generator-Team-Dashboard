@@ -3,6 +3,7 @@ import { usersApi } from '../api/usersApi';
 import { useAuthStore } from '../store/authStore';
 import { useUIStore } from '../store/uiStore';
 import UserTable from '../components/users/UserTable';
+import ConfirmModal from '../components/common/ConfirmModal';
 import {
   UserPlus,
   X,
@@ -25,6 +26,8 @@ export default function UserManagementPage() {
   const [availableRoles, setAvailableRoles] = useState(['admin', 'manager', 'member']);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState({ isOpen: false, userId: null, userName: '' });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Search & Filter State
   const [searchTerm, setSearchTerm] = useState('');
@@ -73,14 +76,22 @@ export default function UserManagementPage() {
     }
   };
 
-  const handleDeleteUser = async (userId, userName) => {
-    if (!window.confirm(`Are you sure you want to remove user "${userName}"?`)) return;
+  const openDeleteModal = (userId, userName) => {
+    setDeleteConfirm({ isOpen: true, userId, userName });
+  };
+
+  const confirmDeleteUser = async () => {
+    if (!deleteConfirm.userId) return;
+    setIsDeleting(true);
     try {
-      await usersApi.deleteUser(userId);
-      addToast(`User ${userName} deleted successfully`, "success");
+      await usersApi.deleteUser(deleteConfirm.userId);
+      addToast(`User "${deleteConfirm.userName}" removed successfully`, "success");
+      setDeleteConfirm({ isOpen: false, userId: null, userName: '' });
       loadData();
     } catch (err) {
       addToast(err.response?.data?.detail || "Failed to delete user", "error");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -294,11 +305,24 @@ export default function UserManagementPage() {
           users={filteredUsers}
           availableRoles={availableRoles}
           onRoleChange={handleRoleChange}
-          onDeleteUser={handleDeleteUser}
+          onDeleteUser={openDeleteModal}
           onResetPassword={handleResetPassword}
           currentUserId={currentUser?.id}
         />
       )}
+
+      {/* Styled Delete Confirmation Popup */}
+      <ConfirmModal
+        isOpen={deleteConfirm.isOpen}
+        title="Remove Team Member?"
+        message={`Are you sure you want to permanently remove "${deleteConfirm.userName}" from the workspace? This will revoke all their RBAC access rights.`}
+        type="danger"
+        confirmText="Yes, Remove User"
+        cancelText="Cancel"
+        onConfirm={confirmDeleteUser}
+        onCancel={() => setDeleteConfirm({ isOpen: false, userId: null, userName: '' })}
+        isLoading={isDeleting}
+      />
 
       {/* Modal for Creating New User / Password Reset Link */}
       {showModal && (
@@ -346,9 +370,11 @@ export default function UserManagementPage() {
                   <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0F2942', margin: 0 }}>
                     {createdInvite ? (createdInvite.isReset ? 'Password Reset Email Dispatched' : 'Invitation Email Dispatched') : 'Create New User'}
                   </h3>
-                  <p style={{ fontSize: '0.8125rem', color: '#64748B', margin: 0 }}>
-                    {createdInvite ? (createdInvite.isReset ? `Password reset link generated for ${createdInvite.name}` : 'Password setup link sent to user') : 'Add account & set DB role access'}
-                  </p>
+                  {createdInvite && (
+                    <p style={{ fontSize: '0.8125rem', color: '#64748B', margin: 0 }}>
+                      {createdInvite.isReset ? `Password reset link generated for ${createdInvite.name}` : 'Password setup link sent to user'}
+                    </p>
+                  )}
                 </div>
               </div>
               <button
@@ -525,7 +551,7 @@ export default function UserManagementPage() {
 
                 <div>
                   <label style={{ fontSize: '0.875rem', fontWeight: '700', color: '#0F2942', marginBottom: '6px', display: 'block' }}>
-                    Assign Role (From Database) *
+                    Assign Workspace Role *
                   </label>
                   <select
                     value={role}

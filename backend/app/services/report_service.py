@@ -6,6 +6,8 @@ from app.models.user import User
 from app.models.project import Project
 from app.schemas.report import ReportCreate, ReportUpdate, ReviewAction
 
+from app.models.notification import Notification, ActivityLog
+
 class ReportService:
 
     @staticmethod
@@ -111,6 +113,30 @@ class ReportService:
         report.submitted_at = datetime.utcnow()
         report.updated_at = datetime.utcnow()
         await report.save()
+
+        # Send Notifications to Managers & Admins
+        try:
+            managers = await User.find(User.role.in_(["manager", "admin"])).to_list()
+            for mgr in managers:
+                if str(mgr.id) != str(user.id):
+                    await Notification(
+                        user_id=str(mgr.id),
+                        title="New Weekly Report Submitted",
+                        message=f"{user.name} submitted weekly report for Week {report.week_start_date}.",
+                        type="submission",
+                        link=f"/reports/{report.id}"
+                    ).insert()
+
+            # Log Activity
+            await ActivityLog(
+                user_id=str(user.id),
+                user_name=user.name,
+                action="SUBMITTED_REPORT",
+                details=f"Submitted weekly report for Week {report.week_start_date}"
+            ).insert()
+        except Exception as e:
+            pass
+
         return report
 
     @staticmethod
@@ -121,8 +147,16 @@ class ReportService:
 
         if review_in.action == "approve":
             report.status = "approved"
+            action_title = "Weekly Report Approved"
+            action_msg = f"Your weekly report for Week {report.week_start_date} was approved by {reviewer.name}."
+            log_action = "APPROVED_REPORT"
+            log_details = f"Approved {report.user_name}'s weekly report for Week {report.week_start_date}"
         elif review_in.action == "request_changes":
             report.status = "needs_correction"
+            action_title = "Changes Requested on Report"
+            action_msg = f"{reviewer.name} requested changes on your report for Week {report.week_start_date}: '{review_in.comment}'"
+            log_action = "REQUESTED_CORRECTION"
+            log_details = f"Requested changes on {report.user_name}'s report: '{review_in.comment}'"
         else:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Action must be 'approve' or 'request_changes'")
 
@@ -134,4 +168,27 @@ class ReportService:
         )
         report.updated_at = datetime.utcnow()
         await report.save()
+
+        # Send Notification to Author
+        try:
+            if report.user_id != str(reviewer.id):
+                await Notification(
+                    user_id=report.user_id,
+                    title=action_title,
+                    message=action_msg,
+                    type="approval" if review_in.action == "approve" else "review_request",
+                    link=f"/reports/{report.id}"
+                ).insert()
+
+            # Log Activity
+            await ActivityLog(
+                user_id=str(reviewer.id),
+                user_name=reviewer.name,
+                action=log_action,
+                details=log_details
+            ).insert()
+        except Exception as e:
+            pass
+
         return report
+

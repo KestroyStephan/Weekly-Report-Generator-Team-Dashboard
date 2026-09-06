@@ -5,6 +5,7 @@ import { getWeekRange } from '../utils/dateHelpers';
 import { useUIStore } from '../store/uiStore';
 import ReportForm from '../components/report/ReportForm';
 import VersionHistoryPanel from '../components/report/VersionHistoryPanel';
+import ConfirmModal from '../components/common/ConfirmModal';
 
 export default function MyReportPage() {
   const [report, setReport] = useState(null);
@@ -12,6 +13,7 @@ export default function MyReportPage() {
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
   const { addToast } = useUIStore();
 
   const weekRange = getWeekRange();
@@ -56,9 +58,14 @@ export default function MyReportPage() {
     }
   };
 
-  const handleSubmit = async () => {
+  const handlePromptSubmit = () => {
+    setShowSubmitConfirm(true);
+  };
+
+  const confirmSubmit = async () => {
     if (!report) return;
     setIsSubmitting(true);
+    setShowSubmitConfirm(false);
     try {
       // First save content updates
       await reportsApi.updateReport(report.id, {
@@ -89,11 +96,24 @@ export default function MyReportPage() {
         projects={projects}
         onChange={setReport}
         onSaveDraft={handleSaveDraft}
-        onSubmit={handleSubmit}
+        onSubmit={handlePromptSubmit}
         isSaving={isSaving}
         isSubmitting={isSubmitting}
         isReadOnly={isReadOnly}
       />
+
+      <ConfirmModal
+        isOpen={showSubmitConfirm}
+        title="Submit Weekly Work Report?"
+        message="Are you sure you want to submit your weekly report for manager review? Once submitted, the report will be locked from further editing until reviewed."
+        type="info"
+        confirmText="Yes, Submit Report"
+        cancelText="Cancel"
+        onConfirm={confirmSubmit}
+        onCancel={() => setShowSubmitConfirm(false)}
+        isLoading={isSubmitting}
+      />
+
       {report && <VersionHistoryPanel reportId={report.id} currentVersion={report.version} />}
     </div>
   );

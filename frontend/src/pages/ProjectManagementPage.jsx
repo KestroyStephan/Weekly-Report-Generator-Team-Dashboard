@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { projectsApi } from '../api/projectsApi';
 import { useUIStore } from '../store/uiStore';
 import ProjectTable from '../components/projects/ProjectTable';
+import ConfirmModal from '../components/common/ConfirmModal';
 import Button from '../components/common/Button';
 import Modal from '../components/common/Modal';
 import Input from '../components/common/Input';
@@ -17,6 +18,8 @@ export default function ProjectManagementPage() {
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('active');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState({ isOpen: false, id: null, name: '' });
+  const [isDeleting, setIsDeleting] = useState(false);
   const { addToast } = useUIStore();
 
   const loadProjects = async () => {
@@ -71,14 +74,22 @@ export default function ProjectManagementPage() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this project?")) return;
+  const openDeleteModal = (proj) => {
+    setDeleteConfirm({ isOpen: true, id: proj.id || proj._id, name: proj.name });
+  };
+
+  const confirmDeleteProject = async () => {
+    if (!deleteConfirm.id) return;
+    setIsDeleting(true);
     try {
-      await projectsApi.deleteProject(id);
-      addToast("Project deleted", "success");
+      await projectsApi.deleteProject(deleteConfirm.id);
+      addToast(`Project "${deleteConfirm.name}" deleted successfully`, "success");
+      setDeleteConfirm({ isOpen: false, id: null, name: '' });
       loadProjects();
     } catch (err) {
       addToast("Failed to delete project", "error");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -97,8 +108,28 @@ export default function ProjectManagementPage() {
       {loading ? (
         <div style={{ padding: '32px', textAlign: 'center' }}>Loading projects...</div>
       ) : (
-        <ProjectTable projects={projects} onEdit={handleOpenEditModal} onDelete={handleDelete} />
+        <ProjectTable
+          projects={projects}
+          onEdit={handleOpenEditModal}
+          onDelete={(id) => {
+            const target = projects.find(p => p.id === id || p._id === id);
+            openDeleteModal(target || { id, name: 'this project' });
+          }}
+        />
       )}
+
+      {/* Delete Confirmation Popup Modal */}
+      <ConfirmModal
+        isOpen={deleteConfirm.isOpen}
+        title="Delete Project?"
+        message={`Are you sure you want to delete "${deleteConfirm.name}"? Active tasks and member associations may be affected.`}
+        type="danger"
+        confirmText="Delete Project"
+        cancelText="Cancel"
+        onConfirm={confirmDeleteProject}
+        onCancel={() => setDeleteConfirm({ isOpen: false, id: null, name: '' })}
+        isLoading={isDeleting}
+      />
 
       {/* Create / Edit Modal */}
       <Modal

@@ -46,3 +46,7 @@ frontend/.env
 *.swo
 .DS_Store
 Thumbs.db
+README.md
+er_diagram_schema.md
+video_demo_script.md
+technical_presentation_outline.md

@@ -5,7 +5,8 @@ from app.config import settings
 from app.database import init_db, close_db
 from app.routers import (
     auth_router, users_router, projects_router,
-    reports_router, reviews_router, dashboard_router, ai_router
+    reports_router, reviews_router, dashboard_router, ai_router,
+    notifications_router
 )
 
 @asynccontextmanager
@@ -40,6 +41,7 @@ app.include_router(reports_router)
 app.include_router(reviews_router)
 app.include_router(dashboard_router)
 app.include_router(ai_router)
+app.include_router(notifications_router)
 
 @app.get("/health")
 async def health_check():

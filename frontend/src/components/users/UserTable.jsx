@@ -60,6 +60,7 @@ export default function UserTable({
                 const isSelf = u.id === currentUserId;
                 const isAdmin = u.role === 'admin';
                 const isManager = u.role === 'manager';
+                const isProtectedAccount = u.email?.toLowerCase() === 'admin@demo.com' || u.role === 'admin';
 
                 const avatarBg = isAdmin
                   ? 'linear-gradient(135deg, #4F46E5 0%, #6366F1 100%)'
@@ -159,23 +160,23 @@ export default function UserTable({
                     <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                       <select
                         value={u.role}
-                        disabled={isSelf}
+                        disabled={isSelf || isProtectedAccount}
                         onChange={(e) => onRoleChange(u.id, e.target.value)}
                         style={{
                           padding: '8px 14px',
                           borderRadius: '10px',
                           border: '1.5px solid #CBD5E1',
-                          backgroundColor: isSelf ? '#F8FAFC' : '#FFFFFF',
+                          backgroundColor: (isSelf || isProtectedAccount) ? '#F8FAFC' : '#FFFFFF',
                           fontSize: '0.8125rem',
                           fontWeight: '700',
                           color: '#0F2942',
-                          cursor: isSelf ? 'not-allowed' : 'pointer',
+                          cursor: (isSelf || isProtectedAccount) ? 'not-allowed' : 'pointer',
                           outline: 'none',
                           boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
                           transition: 'border-color 0.15s ease'
                         }}
-                        onFocus={(e) => !isSelf && (e.target.style.borderColor = '#0D8A6A')}
-                        onBlur={(e) => !isSelf && (e.target.style.borderColor = '#CBD5E1')}
+                        onFocus={(e) => !(isSelf || isProtectedAccount) && (e.target.style.borderColor = '#0D8A6A')}
+                        onBlur={(e) => !(isSelf || isProtectedAccount) && (e.target.style.borderColor = '#CBD5E1')}
                       >
                         {availableRoles.map((role) => (
                           <option key={role} value={role}>
@@ -220,7 +221,27 @@ export default function UserTable({
                           </button>
                         )}
 
-                        {!isSelf && onDeleteUser && (
+                        {isProtectedAccount ? (
+                          <span
+                            title="System Admin Account (Protected from deletion by any user)"
+                            style={{
+                              padding: '6px 10px',
+                              borderRadius: '10px',
+                              backgroundColor: '#EEF2FF',
+                              color: '#4338CA',
+                              fontSize: '0.75rem',
+                              fontWeight: '800',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              border: '1px solid #C7D2FE',
+                              userSelect: 'none'
+                            }}
+                          >
+                            <Shield size={14} color="#4F46E5" />
+                            Protected
+                          </span>
+                        ) : !isSelf && onDeleteUser ? (
                           <button
                             type="button"
                             onClick={() => onDeleteUser(u.id, u.name)}
@@ -250,7 +271,7 @@ export default function UserTable({
                           >
                             <Trash2 size={16} />
                           </button>
-                        )}
+                        ) : null}
                       </div>
                     </td>
                   </tr>

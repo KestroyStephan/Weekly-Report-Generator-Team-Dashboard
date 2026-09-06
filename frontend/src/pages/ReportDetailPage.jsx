@@ -8,7 +8,7 @@ import ReportForm from '../components/report/ReportForm';
 import VersionHistoryPanel from '../components/report/VersionHistoryPanel';
 import ReviewPanel from '../components/review/ReviewPanel';
 import Button from '../components/common/Button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Download } from 'lucide-react';
 
 export default function ReportDetailPage() {
   const { id } = useParams();
@@ -40,6 +40,40 @@ export default function ReportDetailPage() {
     }
     loadReport();
   }, [id]);
+
+  const exportCSV = () => {
+    if (!report) return;
+    const content = report.content || {};
+    let csvRows = [
+      ['Weekly Report Summary', `Week: ${report.week_start_date} to ${report.week_end_date}`],
+      ['Author', report.user_name || 'Member'],
+      ['Status', report.status],
+      ['Project', report.project_name || 'N/A'],
+      [],
+      ['Task Name', 'Priority', 'Status', 'Actual %', 'Time Spent (hrs)', 'Deliverable']
+    ];
+
+    (content.tasks_completed || []).forEach(t => {
+      csvRows.push([
+        `"${t.task_name || ''}"`,
+        t.priority || '',
+        t.status || '',
+        `${t.actual_pct || 0}%`,
+        t.time_spent_hrs || 0,
+        `"${t.deliverable || ''}"`
+      ]);
+    });
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + csvRows.map(e => e.join(',')).join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `Weekly_Report_${report.user_name || 'Report'}_${report.week_start_date}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    addToast("Exported report to CSV successfully!", "success");
+  };
 
   const handleReviewSubmit = async (reviewData) => {
     setIsReviewing(true);
@@ -95,9 +129,13 @@ export default function ReportDetailPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Button variant="ghost" size="sm" icon={ArrowLeft} onClick={() => navigate(-1)}>
           Back to Reports List
+        </Button>
+
+        <Button variant="outline" size="sm" icon={Download} onClick={exportCSV}>
+          Export CSV Report
         </Button>
       </div>
 
