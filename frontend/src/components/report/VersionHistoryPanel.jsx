@@ -85,7 +85,7 @@ export default function VersionHistoryPanel({ reportId, currentVersion }) {
               </span>
             </div>
             <Badge variant={selectedVersion.status_at_time === 'needs_correction' ? 'amber' : 'blue'}>
-              Status at time: {selectedVersion.status_at_time.replace('_', ' ')}
+              Status at time: {(selectedVersion.status_at_time || 'submitted').replace('_', ' ')}
             </Badge>
           </div>
 
@@ -116,9 +116,9 @@ export default function VersionHistoryPanel({ reportId, currentVersion }) {
               Tasks Recorded in Version #{selectedVersion.version_number}:
             </h4>
             <ul style={{ paddingLeft: '20px', fontSize: '0.875rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              {selectedVersion.content.tasks_completed.map((t, idx) => (
+              {(selectedVersion.content?.tasks_completed || []).map((t, idx) => (
                 <li key={idx}>
-                  <strong>{t.task_name}</strong> - {t.actual_pct}% completed ({t.time_spent_hrs} hrs spent)
+                  <strong>{t.task_name || 'Task'}</strong> - {t.actual_pct ?? 0}% completed ({t.time_spent_hrs ?? 0} hrs spent)
                 </li>
               ))}
             </ul>

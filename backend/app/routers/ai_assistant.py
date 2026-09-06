@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from app.models.user import User
 from app.services.ai_service import AIService
-from app.deps import require_role
+from app.deps import get_current_user
 
 router = APIRouter(prefix="/ai", tags=["AI Assistant"])
 
@@ -18,10 +18,11 @@ class ChatResponse(BaseModel):
 @router.post("/chat", response_model=ChatResponse)
 async def chat_with_assistant(
     request: ChatRequest,
-    current_user: User = Depends(require_role("manager", "admin"))
+    current_user: User = Depends(get_current_user)
 ):
-    answer = await AIService.chat(request.question, request.week_start_date)
+    answer = await AIService.chat(request.question, current_user, request.week_start_date)
     return ChatResponse(
         answer=answer,
         provider="ollama/grok"
     )
+

@@ -92,10 +92,10 @@ export default function TaskTable({ tasks = [], onChange, isReadOnly = false, ti
 
                   <td style={{ padding: '8px 12px' }}>
                     {isReadOnly ? (
-                      <span style={{ textTransform: 'capitalize', fontSize: '0.8125rem' }}>{task.status.replace('_', ' ')}</span>
+                      <span style={{ textTransform: 'capitalize', fontSize: '0.8125rem' }}>{(task?.status || 'in_progress').replace('_', ' ')}</span>
                     ) : (
                       <select
-                        value={task.status}
+                        value={task?.status || 'in_progress'}
                         onChange={(e) => handleUpdateTask(idx, 'status', e.target.value)}
                         style={{ width: '100%', padding: '6px 8px', borderRadius: '4px', border: '1px solid var(--color-card-border)' }}
                       >

@@ -64,11 +64,34 @@ export default function ReportDetailPage() {
   }
 
   if (!report) {
-    return <div style={{ padding: '32px', textAlign: 'center', color: 'var(--color-text-muted)' }}>Report not found.</div>;
+    return (
+      <div style={{
+        padding: '40px 24px',
+        textAlign: 'center',
+        backgroundColor: '#FFFFFF',
+        borderRadius: 'var(--radius-md)',
+        border: '1px solid var(--color-card-border)',
+        maxWidth: '600px',
+        margin: '32px auto',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '16px'
+      }}>
+        <h3 style={{ fontSize: '1.125rem', fontWeight: '600', color: 'var(--color-text-primary)' }}>Report Not Found</h3>
+        <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
+          The requested report could not be found or you do not have permission to view it.
+        </p>
+        <Button variant="outline" size="sm" icon={ArrowLeft} onClick={() => navigate(-1)}>
+          Return to Previous Page
+        </Button>
+      </div>
+    );
   }
 
   const isManager = user?.role === 'manager' || user?.role === 'admin';
   const showReviewPanel = isManager && report.status === 'submitted';
+  const reportId = report.id || report._id || id;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -96,8 +119,9 @@ export default function ReportDetailPage() {
       )}
 
       <div style={{ maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
-        <VersionHistoryPanel reportId={report.id} currentVersion={report.version} />
+        <VersionHistoryPanel reportId={reportId} currentVersion={report.version || 1} />
       </div>
     </div>
   );
 }
+

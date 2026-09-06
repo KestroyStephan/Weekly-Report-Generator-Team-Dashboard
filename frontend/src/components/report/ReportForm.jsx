@@ -18,13 +18,16 @@ export default function ReportForm({
   isSubmitting = false,
   isReadOnly = false
 }) {
-  const content = report.content || {
-    tasks_completed: [],
-    tasks_planned_next_week: [],
-    blockers: [],
-    achievements: [],
-    hours_by_type: { development: 0, testing: 0, meetings: 0, documentation: 0, other: 0 },
-    notes: ''
+  const safeProjects = Array.isArray(projects) ? projects : [];
+
+  const rawContent = report?.content || {};
+  const content = {
+    tasks_completed: rawContent.tasks_completed || [],
+    tasks_planned_next_week: rawContent.tasks_planned_next_week || [],
+    blockers: rawContent.blockers || [],
+    achievements: rawContent.achievements || [],
+    hours_by_type: rawContent.hours_by_type || { development: 0, testing: 0, meetings: 0, documentation: 0, other: 0 },
+    notes: rawContent.notes || ''
   };
 
   const handleContentChange = (field, value) => {
@@ -38,8 +41,8 @@ export default function ReportForm({
     onChange({ ...report, project_id: e.target.value });
   };
 
-  const isNeedsCorrection = report.status === 'needs_correction';
-  const reviewerComment = report.review?.comment;
+  const isNeedsCorrection = report?.status === 'needs_correction';
+  const reviewerComment = report?.review?.comment;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '1000px', margin: '0 auto' }}>
@@ -60,15 +63,15 @@ export default function ReportForm({
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--color-text-primary)' }}>
-              Weekly Report: {report.week_start_date} to {report.week_end_date}
+              Weekly Report: {report?.week_start_date || ''} to {report?.week_end_date || ''}
             </h2>
-            <StatusBadge status={report.status} />
+            <StatusBadge status={report?.status || 'draft'} />
             <span style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', fontWeight: '500' }}>
-              (Version #{report.version || 1})
+              (Version #{report?.version || 1})
             </span>
           </div>
           <p style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
-            Author: <strong>{report.user_name || 'Current User'}</strong>
+            Author: <strong>{report?.user_name || 'Current User'}</strong>
           </p>
         </div>
 
@@ -76,11 +79,11 @@ export default function ReportForm({
           <Select
             label="Associated Project"
             disabled={isReadOnly}
-            value={report.project_id || ''}
+            value={report?.project_id || ''}
             onChange={handleProjectChange}
             options={[
               { value: '', label: '-- Select Project --' },
-              ...projects.map((p) => ({ value: p.id, label: p.name }))
+              ...safeProjects.map((p) => ({ value: p.id || p._id, label: p.name }))
             ]}
           />
         </div>

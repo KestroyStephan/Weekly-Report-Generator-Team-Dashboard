@@ -4,6 +4,7 @@ import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import Toast from '../common/Toast';
 import ChatWidget from '../chat/ChatWidget';
+import ErrorBoundary from '../common/ErrorBoundary';
 import { useAuthStore } from '../../store/authStore';
 
 export default function AppLayout() {
@@ -31,11 +32,14 @@ export default function AppLayout() {
       <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <Topbar title={getTitle(location.pathname)} />
         <main style={{ padding: '28px 28px 90px 28px', flexGrow: 1 }}>
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </main>
       </div>
       <Toast />
-      {isManager && <ChatWidget />}
+      {user && <ChatWidget />}
     </div>
   );
 }
+
