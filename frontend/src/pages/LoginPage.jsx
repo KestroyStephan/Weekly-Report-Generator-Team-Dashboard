@@ -48,7 +48,103 @@ export default function LoginPage() {
       overflow: 'hidden'
     }}>
       
-      {/* LEFT PANEL - Human-Crafted Unified Login Card */}
+      {/* LEFT PANEL - Deep Rich Emerald Hero Canvas */}
+      <div style={{
+        flex: '1 1 55%',
+        background: `
+          radial-gradient(circle at 20% 20%, rgba(52, 211, 153, 0.25) 0%, transparent 45%),
+          radial-gradient(circle at 80% 80%, rgba(14, 165, 233, 0.2) 0%, transparent 45%),
+          linear-gradient(135deg, #022C22 0%, #064E3B 50%, #0F172A 100%)
+        `,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '56px 64px',
+        position: 'relative',
+        boxSizing: 'border-box',
+        overflow: 'hidden'
+      }}>
+        {/* Ambient Glowing Light Blur */}
+        <div style={{
+          position: 'absolute',
+          top: '-100px',
+          left: '-100px',
+          width: '400px',
+          height: '400px',
+          borderRadius: '50%',
+          backgroundColor: 'rgba(52, 211, 153, 0.15)',
+          filter: 'blur(90px)',
+          pointerEvents: 'none'
+        }} />
+
+        {/* Center Content Container */}
+        <div style={{
+          maxWidth: '540px',
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
+          gap: '32px',
+          position: 'relative',
+          zIndex: 3
+        }}>
+          
+          {/* Main Headline */}
+          <h2 style={{
+            fontSize: '3.25rem',
+            fontWeight: '900',
+            color: '#FFFFFF',
+            letterSpacing: '-0.035em',
+            margin: 0,
+            lineHeight: 1.15
+          }}>
+            Better Teams.<br />
+            Build <span style={{
+              background: 'linear-gradient(135deg, #34D399 0%, #10B981 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}>
+              Brighter
+            </span>{' '}
+            <span style={{
+              background: 'linear-gradient(135deg, #38BDF8 0%, #818CF8 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}>
+              Tomorrows.
+            </span>
+          </h2>
+
+          {/* Floating Premium Illustration Card */}
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            borderRadius: '24px',
+            padding: '24px 32px',
+            boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.2)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            boxSizing: 'border-box'
+          }}>
+            <img
+              src={loginIllustration}
+              alt="Team Weekly Reporting & Productivity"
+              style={{
+                width: '100%',
+                maxHeight: '340px',
+                objectFit: 'contain'
+              }}
+            />
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* RIGHT PANEL - Human-Crafted Unified Login Card */}
       <div style={{
         flex: '1 1 45%',
         minWidth: '420px',
@@ -60,7 +156,7 @@ export default function LoginPage() {
         padding: '48px',
         boxSizing: 'border-box',
         position: 'relative',
-        boxShadow: '8px 0 30px rgba(0, 0, 0, 0.06)',
+        boxShadow: '-8px 0 30px rgba(0, 0, 0, 0.06)',
         zIndex: 2
       }}>
         {/* Main Unified Form Card */}
@@ -332,102 +428,6 @@ export default function LoginPage() {
             </button>
           </form>
         </div>
-      </div>
-
-      {/* RIGHT PANEL - Deep Rich Emerald Hero Canvas */}
-      <div style={{
-        flex: '1 1 55%',
-        background: `
-          radial-gradient(circle at 20% 20%, rgba(52, 211, 153, 0.25) 0%, transparent 45%),
-          radial-gradient(circle at 80% 80%, rgba(14, 165, 233, 0.2) 0%, transparent 45%),
-          linear-gradient(135deg, #022C22 0%, #064E3B 50%, #0F172A 100%)
-        `,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '56px 64px',
-        position: 'relative',
-        boxSizing: 'border-box',
-        overflow: 'hidden'
-      }}>
-        {/* Ambient Glowing Light Blur */}
-        <div style={{
-          position: 'absolute',
-          top: '-100px',
-          right: '-100px',
-          width: '400px',
-          height: '400px',
-          borderRadius: '50%',
-          backgroundColor: 'rgba(52, 211, 153, 0.15)',
-          filter: 'blur(90px)',
-          pointerEvents: 'none'
-        }} />
-
-        {/* Center Content Container */}
-        <div style={{
-          maxWidth: '540px',
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          textAlign: 'center',
-          gap: '32px',
-          position: 'relative',
-          zIndex: 3
-        }}>
-          
-          {/* Main Headline */}
-          <h2 style={{
-            fontSize: '3.25rem',
-            fontWeight: '900',
-            color: '#FFFFFF',
-            letterSpacing: '-0.035em',
-            margin: 0,
-            lineHeight: 1.15
-          }}>
-            Better Teams.<br />
-            Build <span style={{
-              background: 'linear-gradient(135deg, #34D399 0%, #10B981 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent'
-            }}>
-              Brighter
-            </span>{' '}
-            <span style={{
-              background: 'linear-gradient(135deg, #38BDF8 0%, #818CF8 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent'
-            }}>
-              Tomorrows.
-            </span>
-          </h2>
-
-          {/* Floating Premium Illustration Card */}
-          <div style={{
-            backgroundColor: '#FFFFFF',
-            borderRadius: '24px',
-            padding: '24px 32px',
-            boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.2)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '100%',
-            boxSizing: 'border-box'
-          }}>
-            <img
-              src={loginIllustration}
-              alt="Team Weekly Reporting & Productivity"
-              style={{
-                width: '100%',
-                maxHeight: '340px',
-                objectFit: 'contain'
-              }}
-            />
-          </div>
-
-        </div>
-
       </div>
 
     </div>

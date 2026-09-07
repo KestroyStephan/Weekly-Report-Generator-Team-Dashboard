@@ -30,7 +30,7 @@ async def create_project(
     project = Project(
         name=project_in.name,
         description=project_in.description or "",
-        status="active",
+        status=project_in.status or "active",
         created_by=str(current_user.id)
     )
     await project.insert()

@@ -84,7 +84,7 @@ export default function DashboardPage() {
         projects={projects}
       />
 
-      <SummaryCards summary={summary} />
+      <SummaryCards summary={summary} projects={projects} />
 
       {/* Charts Grid Row 1 */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: '20px' }}>

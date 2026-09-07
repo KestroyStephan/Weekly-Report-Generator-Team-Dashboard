@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict
 class ProjectCreate(BaseModel):
     name: str
     description: Optional[str] = ""
+    status: Optional[str] = "active"
 
 class ProjectUpdate(BaseModel):
     name: Optional[str] = None

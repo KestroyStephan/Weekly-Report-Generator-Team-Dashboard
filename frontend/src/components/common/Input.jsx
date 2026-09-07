@@ -24,7 +24,7 @@ export default function Input({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', width: '100%', ...style }} className={className}>
       {label && (
-        <label style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#334155', display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <label style={{ fontSize: '0.8125rem', fontWeight: '700', color: '#0F2942', display: 'flex', alignItems: 'center', gap: '4px' }}>
           {label} {required && <span style={{ color: '#EF4444' }}>*</span>}
         </label>
       )}
@@ -37,8 +37,8 @@ export default function Input({
         {Icon && (
           <div style={{
             position: 'absolute',
-            left: '12px',
-            color: isFocused ? '#4F46E5' : '#94A3B8',
+            left: '14px',
+            color: isFocused ? '#0D8A6A' : '#94A3B8',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -59,20 +59,20 @@ export default function Input({
           onBlur={() => setIsFocused(false)}
           style={{
             width: '100%',
-            padding: '11px 14px',
-            paddingLeft: Icon ? '40px' : '14px',
-            paddingRight: isPasswordType ? '40px' : '14px',
-            borderRadius: '10px',
+            padding: '12px 14px',
+            paddingLeft: Icon ? '44px' : '14px',
+            paddingRight: isPasswordType ? '44px' : '14px',
+            borderRadius: '12px',
             border: error
               ? '1.5px solid #EF4444'
               : isFocused
-              ? '1.5px solid #4F46E5'
-              : '1.5px solid #E2E8F0',
+              ? '1.5px solid #0D8A6A'
+              : '1.5px solid #CBD5E1',
             backgroundColor: disabled ? '#F8FAFC' : '#FFFFFF',
-            color: '#0F172A',
-            fontSize: '0.875rem',
+            color: '#0F2942',
+            fontSize: '0.9375rem',
             outline: 'none',
-            boxShadow: isFocused ? '0 0 0 4px rgba(79, 70, 229, 0.12)' : '0 1px 2px 0 rgba(0, 0, 0, 0.03)',
+            boxShadow: isFocused ? '0 0 0 4px rgba(13, 138, 106, 0.12)' : '0 1px 2px 0 rgba(0, 0, 0, 0.03)',
             transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
           {...props}
@@ -83,7 +83,7 @@ export default function Input({
             onClick={() => setShowPassword(!showPassword)}
             style={{
               position: 'absolute',
-              right: '12px',
+              right: '14px',
               background: 'none',
               border: 'none',
               cursor: 'pointer',
@@ -99,7 +99,7 @@ export default function Input({
           </button>
         )}
       </div>
-      {error && <span style={{ fontSize: '0.75rem', color: '#EF4444', fontWeight: '500' }}>{error}</span>}
+      {error && <span style={{ fontSize: '0.75rem', color: '#EF4444', fontWeight: '600' }}>{error}</span>}
     </div>
   );
 }

@@ -18,37 +18,38 @@ export default function Button({
     alignItems: 'center',
     justifyContent: 'center',
     gap: '8px',
-    fontWeight: '600',
-    borderRadius: 'var(--radius-sm)',
+    fontWeight: '700',
+    borderRadius: '12px',
     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
     cursor: disabled || isLoading ? 'not-allowed' : 'pointer',
     opacity: disabled || isLoading ? 0.65 : 1,
     whiteSpace: 'nowrap',
     outline: 'none',
-    border: 'none'
+    border: 'none',
+    userSelect: 'none'
   };
 
   const sizes = {
-    sm: { padding: '7px 14px', fontSize: '0.8125rem' },
-    md: { padding: '10px 18px', fontSize: '0.875rem' },
-    lg: { padding: '13px 24px', fontSize: '1rem' }
+    sm: { padding: '8px 14px', fontSize: '0.8125rem' },
+    md: { padding: '11px 20px', fontSize: '0.875rem' },
+    lg: { padding: '14px 26px', fontSize: '1rem' }
   };
 
   const variants = {
     primary: {
-      background: 'linear-gradient(135deg, #4F46E5 0%, #6366F1 100%)',
+      background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
       color: '#FFFFFF',
-      boxShadow: '0 4px 14px 0 rgba(79, 70, 229, 0.35)',
+      boxShadow: '0 4px 14px 0 rgba(16, 185, 129, 0.35)',
     },
     secondary: {
-      backgroundColor: '#F1F5F9',
-      color: '#0F172A',
-      border: '1px solid #E2E8F0',
+      backgroundColor: '#ECFDF5',
+      color: '#065F46',
+      border: '1px solid #A7F3D0',
     },
     outline: {
-      backgroundColor: 'transparent',
-      color: 'var(--color-text-primary)',
-      border: '1px solid var(--color-card-border)',
+      backgroundColor: '#FFFFFF',
+      color: '#0D8A6A',
+      border: '1.5px solid #0D8A6A',
     },
     danger: {
       background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
@@ -57,7 +58,7 @@ export default function Button({
     },
     ghost: {
       backgroundColor: 'transparent',
-      color: 'var(--color-text-secondary)',
+      color: '#0D8A6A',
     }
   };
 
@@ -73,6 +74,26 @@ export default function Button({
         ...style
       }}
       className={className}
+      onMouseOver={(e) => {
+        if (!disabled && !isLoading) {
+          if (variant === 'primary') {
+            e.currentTarget.style.boxShadow = '0 6px 20px 0 rgba(16, 185, 129, 0.45)';
+            e.currentTarget.style.transform = 'translateY(-1.5px)';
+          } else if (variant === 'outline') {
+            e.currentTarget.style.backgroundColor = '#ECFDF5';
+          }
+        }
+      }}
+      onMouseOut={(e) => {
+        if (!disabled && !isLoading) {
+          if (variant === 'primary') {
+            e.currentTarget.style.boxShadow = '0 4px 14px 0 rgba(16, 185, 129, 0.35)';
+            e.currentTarget.style.transform = 'translateY(0)';
+          } else if (variant === 'outline') {
+            e.currentTarget.style.backgroundColor = '#FFFFFF';
+          }
+        }
+      }}
       {...props}
     >
       {isLoading ? (
@@ -86,7 +107,7 @@ export default function Button({
           animation: 'spin 0.8s linear infinite'
         }} />
       ) : Icon ? (
-        <Icon size={size === 'sm' ? 14 : size === 'lg' ? 18 : 16} />
+        <Icon size={size === 'sm' ? 14 : size === 'lg' ? 18 : 16} style={{ strokeWidth: 2.2 }} />
       ) : null}
       {children}
     </button>
