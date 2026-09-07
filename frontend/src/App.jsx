@@ -48,6 +48,7 @@ export default function App() {
           {/* Protected Application Routes */}
           <Route element={<ProtectedRoute />}>
             <Route element={<AppLayout />}>
+              <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/my-report" element={<MyReportPage />} />
               <Route path="/reports-history" element={<ReportHistoryPage />} />
               <Route path="/reports/:id" element={<ReportDetailPage />} />
@@ -55,7 +56,6 @@ export default function App() {
 
               {/* Manager & Admin Only Routes */}
               <Route element={<RoleRoute roles={['manager', 'admin']} />}>
-                <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/manager-review" element={<ManagerReviewPage />} />
                 <Route path="/projects" element={<ProjectManagementPage />} />
                 <Route path="/users" element={<UserManagementPage />} />
@@ -65,7 +65,7 @@ export default function App() {
           </Route>
 
           {/* Default Fallback */}
-          <Route path="*" element={<Navigate to="/my-report" replace />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

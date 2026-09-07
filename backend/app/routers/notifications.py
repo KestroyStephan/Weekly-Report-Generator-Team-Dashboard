@@ -29,6 +29,10 @@ class ActivityLogOut(BaseModel):
     details: str
     created_at: str
 
+class ReminderRequest(BaseModel):
+    user_id: str
+    message: Optional[str] = "Please remember to submit your weekly report before the deadline."
+
 @router.get("", response_model=NotificationListResponse)
 async def list_notifications(current_user: User = Depends(get_current_user)):
     user_id = str(current_user.id)
@@ -54,6 +58,23 @@ async def list_notifications(current_user: User = Depends(get_current_user)):
         ) for n in notifications
     ]
     return NotificationListResponse(unread_count=unread_count, notifications=out_items)
+
+@router.post("/send-reminder")
+async def send_reminder(req: ReminderRequest, current_user: User = Depends(get_current_user)):
+    target_user = await User.get(req.user_id)
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    n = Notification(
+        user_id=str(target_user.id),
+        title="Weekly Report Reminder",
+        message=req.message,
+        type="review_request",
+        link="/my-report",
+        is_read=False
+    )
+    await n.insert()
+    return {"status": "success", "message": f"Reminder sent to {target_user.name}"}
 
 @router.post("/{notification_id}/read")
 async def mark_read(notification_id: str, current_user: User = Depends(get_current_user)):
@@ -89,3 +110,4 @@ async def list_activity_logs(current_user: User = Depends(get_current_user)):
             created_at=l.created_at.isoformat()
         ) for l in logs
     ]
+
