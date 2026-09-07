@@ -35,9 +35,6 @@ export default function ManagerReviewPage() {
         <h2 style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--color-text-primary)' }}>
           Manager Review Queue
         </h2>
-        <p style={{ fontSize: '0.875rem', color: 'var(--color-text-secondary)' }}>
-          Reports submitted by team members requiring manager review and approval
-        </p>
       </div>
 
       {loading ? (

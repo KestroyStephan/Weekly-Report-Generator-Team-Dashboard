@@ -91,7 +91,7 @@ export default function BlockersWidget({ currentReport }) {
             <tbody>
               {blockers.map((b, idx) => (
                 <tr key={idx} style={{ borderBottom: '1px solid #F8FAFC' }}>
-                  <td style={{ padding: '12px 12px 12px 0', fontWeight: '600', color: '#1E293B' }}>{b.description || b}</td>
+                  <td style={{ padding: '12px 12px 12px 0', fontWeight: '600', color: '#1E293B' }}>{b.text || 'Blocker'}</td>
                   <td style={{ padding: '12px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <span style={{
@@ -168,7 +168,7 @@ export default function BlockersWidget({ currentReport }) {
                   alignItems: 'center'
                 }}>
                   <div>
-                    <strong style={{ fontSize: '0.875rem', color: '#0F172A', display: 'block' }}>{b.description || b}</strong>
+                    <strong style={{ fontSize: '0.875rem', color: '#0F172A', display: 'block' }}>{b.text || 'Blocker'}</strong>
                     <span style={{ fontSize: '0.75rem', color: '#64748B' }}>Severity: {b.is_key_issue ? 'High' : 'Medium'}</span>
                   </div>
                   <span style={{

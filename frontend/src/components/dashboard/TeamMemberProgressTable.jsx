@@ -4,7 +4,7 @@ import Button from '../common/Button';
 import { notificationsApi } from '../../api/notificationsApi';
 import { useUIStore } from '../../store/uiStore';
 
-export default function TeamMemberProgressTable({ members = [], statusByMember = [] }) {
+export default function TeamMemberProgressTable({ members = [], statusByMember = [], projects = [] }) {
   const navigate = useNavigate();
   const { addToast } = useUIStore();
 
@@ -98,6 +98,7 @@ export default function TeamMemberProgressTable({ members = [], statusByMember =
                 letterSpacing: '0.04em'
               }}>
                 <th style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>Member</th>
+                <th style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>Assigned Projects</th>
                 <th style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>Report Status</th>
                 <th style={{ padding: '12px 14px', width: '28%', whiteSpace: 'nowrap' }}>Completion</th>
                 <th style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>Tasks</th>
@@ -109,6 +110,8 @@ export default function TeamMemberProgressTable({ members = [], statusByMember =
               {teamMembers.map((m) => {
                 const initials = getInitials(m.name);
                 const info = getMemberStatusInfo(m);
+                const memberProjects = projects.filter(p => p.assigned_members?.includes(m.id)).map(p => p.name);
+                const assignedText = memberProjects.length > 0 ? memberProjects.join(', ') : 'Unassigned';
 
                 return (
                   <tr
@@ -144,6 +147,17 @@ export default function TeamMemberProgressTable({ members = [], statusByMember =
                           </span>
                         </div>
                       </div>
+                    </td>
+
+                    {/* Assigned Projects */}
+                    <td style={{ padding: '14px', color: '#64748B', fontSize: '0.8125rem', maxWidth: '160px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={assignedText}>
+                      {memberProjects.length > 0 ? (
+                        <span style={{ backgroundColor: '#F1F5F9', padding: '4px 8px', borderRadius: '6px', fontWeight: '600' }}>
+                          {assignedText}
+                        </span>
+                      ) : (
+                        <span style={{ fontStyle: 'italic', color: '#94A3B8' }}>{assignedText}</span>
+                      )}
                     </td>
 
                     {/* Report Status Badge */}

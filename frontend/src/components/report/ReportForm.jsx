@@ -57,7 +57,7 @@ export default function ReportForm({
   const reviewerComment = report?.review?.comment;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '1080px', margin: '0 auto' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%' }}>
       
       {/* Executive Header Banner Card */}
       <div style={{
@@ -313,39 +313,39 @@ export default function ReportForm({
             />
           )}
         </div>
+
+        {/* Action Footer Bar */}
+        {!isReadOnly && (
+          <div style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            gap: '14px',
+            marginTop: '12px',
+            paddingTop: '24px',
+            borderTop: '1px solid #E2E8F0'
+          }}>
+            <Button
+              variant="outline"
+              icon={Save}
+              isLoading={isSaving}
+              onClick={onSaveDraft}
+            >
+              Save Draft
+            </Button>
+            <Button
+              variant="primary"
+              icon={Send}
+              isLoading={isSubmitting}
+              onClick={onSubmit}
+            >
+              {isNeedsCorrection ? 'Resubmit Report' : 'Submit Report for Review'}
+            </Button>
+          </div>
+        )}
       </div>
 
-      {/* Action Footer Bar */}
-      {!isReadOnly && (
-        <div style={{
-          backgroundColor: '#FFFFFF',
-          padding: '20px 28px',
-          borderRadius: '20px',
-          border: '1px solid #E2E8F0',
-          boxShadow: '0 12px 32px -6px rgba(15, 23, 42, 0.06)',
-          display: 'flex',
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-          gap: '14px'
-        }}>
-          <Button
-            variant="outline"
-            icon={Save}
-            isLoading={isSaving}
-            onClick={onSaveDraft}
-          >
-            Save Draft
-          </Button>
-          <Button
-            variant="primary"
-            icon={Send}
-            isLoading={isSubmitting}
-            onClick={onSubmit}
-          >
-            {isNeedsCorrection ? 'Resubmit Report' : 'Submit Report for Review'}
-          </Button>
-        </div>
-      )}
+
     </div>
   );
 }

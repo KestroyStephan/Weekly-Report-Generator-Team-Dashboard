@@ -129,18 +129,14 @@ export default function DashboardPage() {
         <BlockersByProjectChart projects={workloadByProject.length > 0 ? workloadByProject : projects} />
       </div>
 
-      {/* Content Row 2: Team Member Progress (Full View) + Recent Activity */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'minmax(0, 1.85fr) minmax(0, 1fr)',
-        gap: '20px'
-      }}>
-        <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <TeamMemberProgressTable members={members} statusByMember={statusByMember} />
-        </div>
-        <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <RecentActivityFeed activities={activities} />
-        </div>
+      {/* Content Row 2: Team Member Progress (Full View) */}
+      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <TeamMemberProgressTable members={members} statusByMember={statusByMember} projects={projects} />
+      </div>
+
+      {/* Content Row 3: Recent Activity */}
+      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <RecentActivityFeed activities={activities} />
       </div>
 
     </div>

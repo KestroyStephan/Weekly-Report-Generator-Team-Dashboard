@@ -147,7 +147,7 @@ export default function ReportDetailPage() {
       />
 
       {showReviewPanel && (
-        <div style={{ maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
+        <div style={{ width: '100%' }}>
           <ReviewPanel
             report={report}
             onSubmitReview={handleReviewSubmit}
@@ -156,7 +156,7 @@ export default function ReportDetailPage() {
         </div>
       )}
 
-      <div style={{ maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
+      <div style={{ width: '100%' }}>
         <VersionHistoryPanel reportId={reportId} currentVersion={report.version || 1} />
       </div>
     </div>

@@ -113,8 +113,8 @@ export default function RecentTasksWidget({ currentReport }) {
             <tbody>
               {completedTasks.map((t, idx) => (
                 <tr key={idx} style={{ borderBottom: '1px solid #F8FAFC' }}>
-                  <td style={{ padding: '12px 12px 12px 0', fontWeight: '600', color: '#1E293B' }}>{t.task_description || t}</td>
-                  <td style={{ padding: '12px', color: '#64748B' }}>{t.actual_hours ? `${t.actual_hours}h` : 'N/A'}</td>
+                  <td style={{ padding: '12px 12px 12px 0', fontWeight: '600', color: '#1E293B' }}>{t.task_name || 'Task'}</td>
+                  <td style={{ padding: '12px', color: '#64748B' }}>{t.time_spent_hrs ? `${t.time_spent_hrs}h` : 'N/A'}</td>
                   <td style={{ padding: '12px' }}>{renderPriority(t.priority || 'Medium')}</td>
                   <td style={{ padding: '12px 0 12px 12px', textAlign: 'right' }}>
                     <span style={{
@@ -180,8 +180,8 @@ export default function RecentTasksWidget({ currentReport }) {
                 <tbody>
                   {completedTasks.map((t, idx) => (
                     <tr key={idx} style={{ borderBottom: '1px solid #F1F5F9' }}>
-                      <td style={{ padding: '12px 10px', fontWeight: '600' }}>{t.task_description || t}</td>
-                      <td style={{ padding: '12px 10px' }}>{t.actual_hours ? `${t.actual_hours}h` : 'N/A'}</td>
+                      <td style={{ padding: '12px 10px', fontWeight: '600' }}>{t.task_name || 'Task'}</td>
+                      <td style={{ padding: '12px 10px' }}>{t.time_spent_hrs ? `${t.time_spent_hrs}h` : 'N/A'}</td>
                       <td style={{ padding: '12px 10px' }}>
                         <span style={{ padding: '3px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: '600', backgroundColor: '#DCFCE7', color: '#15803D' }}>
                           Completed

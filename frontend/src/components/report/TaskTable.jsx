@@ -258,9 +258,9 @@ export default function TaskTable({
                             cursor: 'pointer'
                           }}
                         >
-                          <option value="low">Low Priority</option>
-                          <option value="medium">Medium Priority</option>
-                          <option value="high">High Priority</option>
+                          <option value="low">Low</option>
+                          <option value="medium">Medium</option>
+                          <option value="high">High</option>
                         </select>
                       )}
                     </td>
@@ -376,7 +376,7 @@ export default function TaskTable({
                           type="text"
                           value={task.deliverable || ''}
                           onChange={(e) => handleUpdateTask(idx, 'deliverable', e.target.value)}
-                          placeholder="PR #102 / Commit link"
+                          placeholder="PR # or Link"
                           style={{
                             width: '100%',
                             padding: '8px 10px',

@@ -18,7 +18,7 @@ export default function Sidebar() {
 
   const navItems = [
     { label: isManagerOrAdmin ? 'Team Dashboard' : 'My Dashboard', path: '/dashboard', icon: BarChart3, roles: ['member', 'manager', 'admin'] },
-    { label: 'My Weekly Report', path: '/my-report', icon: FileText, roles: ['member', 'manager', 'admin'] },
+    { label: 'My Weekly Report', path: '/my-report', icon: FileText, roles: ['member'] },
     { label: 'Report History', path: '/reports-history', icon: CheckSquare, roles: ['member', 'manager', 'admin'] },
     { label: 'Manager Review Queue', path: '/manager-review', icon: UserCheck, roles: ['manager', 'admin'] },
     { label: 'Projects', path: '/projects', icon: FolderKanban, roles: ['manager', 'admin'] },

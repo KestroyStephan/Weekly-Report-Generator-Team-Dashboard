@@ -93,16 +93,18 @@ class DashboardService:
             str(p.id): {"name": p.name, "count": 0}
             for p in projects
         }
-        proj_counts["unassigned"] = {"name": "General / Other", "count": 0}
 
         for r in reports:
-            pid = r.project_id or "unassigned"
+            if not r.project_id:
+                continue
+                
+            pid = r.project_id
             if pid not in proj_counts:
                 proj_counts[pid] = {"name": r.project_name or "Project", "count": 0}
             
             if r.content:
                 task_count = len(r.content.tasks_completed) + len(r.content.tasks_planned_next_week)
-                proj_counts[pid]["count"] += max(1, task_count)
+                proj_counts[pid]["count"] += task_count
 
         return [
             WorkloadByProjectItem(

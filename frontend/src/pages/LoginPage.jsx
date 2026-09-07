@@ -30,7 +30,7 @@ export default function LoginPage() {
       if (user.role === 'manager' || user.role === 'admin') {
         navigate('/dashboard');
       } else {
-        navigate('/my-report');
+        navigate('/dashboard');
       }
     } catch (err) {
       addToast(err.message || 'Invalid email or password', 'error');

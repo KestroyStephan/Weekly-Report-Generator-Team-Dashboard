@@ -23,13 +23,13 @@ export default function BlockersByProjectChart({ projects = [] }) {
       gap: '18px'
     }}>
       <h3 style={{ fontSize: '1.0625rem', fontWeight: '800', color: '#0F2942', margin: 0 }}>
-        Blockers by Project
+        Task Workload by Project
       </h3>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
         {items.length === 0 ? (
           <div style={{ padding: '24px 0', textAlign: 'center', color: '#64748B', fontSize: '0.875rem' }}>
-            No active project blockers recorded.
+            No task workload recorded.
           </div>
         ) : (
           items.map((item, idx) => {

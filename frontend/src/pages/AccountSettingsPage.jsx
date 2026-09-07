@@ -174,7 +174,6 @@ export default function AccountSettingsPage() {
           </div>
           <div>
             <h2 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0F2942', margin: 0 }}>Account Settings</h2>
-            <p style={{ fontSize: '0.8125rem', color: '#64748B', margin: 0 }}>Manage your profile credentials and security preferences</p>
           </div>
         </div>
 
@@ -182,21 +181,7 @@ export default function AccountSettingsPage() {
           <Input label="Full Name" value={name} onChange={(e) => setName(e.target.value)} required />
           <Input label="Email Address (Corporate Login)" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
 
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '14px 18px',
-            backgroundColor: '#F8FAFC',
-            borderRadius: '14px',
-            border: '1px solid #E2E8F0'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Shield size={18} color="#0D8A6A" />
-              <span style={{ fontSize: '0.875rem', fontWeight: '700', color: '#334155' }}>Assigned RBAC Role:</span>
-            </div>
-            <Badge variant="indigo">{user?.role ? user.role.toUpperCase() : 'ADMIN'}</Badge>
-          </div>
+
 
           <hr style={{ border: 'none', borderTop: '1px solid #F1F5F9', margin: '4px 0' }} />
 
@@ -230,7 +215,7 @@ export default function AccountSettingsPage() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '12px', marginTop: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginTop: '12px' }}>
             <Button type="button" variant="outline" onClick={() => setShowDiscardConfirm(true)}>
               Discard Changes
             </Button>

@@ -86,7 +86,7 @@ export default function MyGoalsWidget({ currentReport }) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <CheckCircle2 size={16} style={{ color: '#10B981', flexShrink: 0 }} />
                   <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#334155' }}>
-                    {g.task_description || g}
+                    {g.task_name || 'Task'}
                   </span>
                 </div>
                 <span style={{ fontSize: '0.8125rem', fontWeight: '700', color: '#0F172A' }}>
@@ -154,8 +154,8 @@ export default function MyGoalsWidget({ currentReport }) {
                   border: '1px solid #E2E8F0'
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <span style={{ fontWeight: '600', fontSize: '0.875rem', color: '#0F172A' }}>{g.task_description || g}</span>
-                    <span style={{ fontWeight: '700', fontSize: '0.875rem', color: '#10B981' }}>Planned: {g.planned_hours || 4}h</span>
+                    <span style={{ fontWeight: '600', fontSize: '0.875rem', color: '#0F172A' }}>{g.task_name || 'Task'}</span>
+                    <span style={{ fontWeight: '700', fontSize: '0.875rem', color: '#10B981' }}>{g.priority || 'Medium'} Priority</span>
                   </div>
                   <div style={{ height: '6px', backgroundColor: '#E2E8F0', borderRadius: '3px', overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: '75%', backgroundColor: '#10B981' }} />

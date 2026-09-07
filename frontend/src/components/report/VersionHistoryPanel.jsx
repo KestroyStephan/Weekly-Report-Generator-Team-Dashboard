@@ -26,11 +26,7 @@ export default function VersionHistoryPanel({ reportId, currentVersion }) {
   if (loading) return <div style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', padding: '12px' }}>Loading version history...</div>;
 
   if (versions.length === 0) {
-    return (
-      <div style={{ padding: '16px', backgroundColor: '#F8FAFC', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-card-border)', fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
-        No prior submission versions recorded yet. This is Version #{currentVersion}.
-      </div>
-    );
+    return null;
   }
 
   return (
