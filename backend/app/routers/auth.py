@@ -117,8 +117,46 @@ async def logout(response: Response):
     response.delete_cookie(key="refresh_token")
     return {"message": "Logged out successfully"}
 
+class ProfileUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    current_password: Optional[str] = None
+    new_password: Optional[str] = None
+
 @router.get("/me", response_model=UserOut)
 async def get_me(current_user: User = Depends(get_current_user)):
+    return UserOut(
+        id=str(current_user.id),
+        name=current_user.name,
+        email=current_user.email,
+        role=current_user.role,
+        created_at=current_user.created_at
+    )
+
+@router.put("/me", response_model=UserOut)
+async def update_me(data: ProfileUpdateRequest, current_user: User = Depends(get_current_user)):
+    if data.name and data.name.strip():
+        current_user.name = data.name.strip()
+    
+    if data.email and data.email.strip() != current_user.email:
+        new_email = data.email.strip()
+        existing = await User.find_one(User.email == new_email)
+        if existing and str(existing.id) != str(current_user.id):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email address is already in use by another account"
+            )
+        current_user.email = new_email
+        
+    if data.new_password and data.new_password.strip():
+        if not data.current_password or not verify_password(data.current_password, current_user.password_hash):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Current password is incorrect"
+            )
+        current_user.password_hash = hash_password(data.new_password.strip())
+        
+    await current_user.save()
     return UserOut(
         id=str(current_user.id),
         name=current_user.name,

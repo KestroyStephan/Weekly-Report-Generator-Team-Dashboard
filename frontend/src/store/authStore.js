@@ -58,5 +58,19 @@ export const useAuthStore = create((set) => ({
       localStorage.removeItem('user');
       set({ user: null, isAuthenticated: false });
     }
+  },
+
+  updateProfile: async (profileData) => {
+    set({ isLoading: true, error: null });
+    try {
+      const updatedUser = await authApi.updateMe(profileData);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      set({ user: updatedUser, isLoading: false });
+      return updatedUser;
+    } catch (err) {
+      const msg = err.response?.data?.detail || 'Failed to update profile';
+      set({ error: msg, isLoading: false });
+      throw new Error(msg);
+    }
   }
 }));

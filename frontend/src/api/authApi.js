@@ -17,6 +17,10 @@ export const authApi = {
     const response = await axiosClient.get('/auth/me');
     return response.data;
   },
+  updateMe: async (profileData) => {
+    const response = await axiosClient.put('/auth/me', profileData);
+    return response.data;
+  },
   setupPassword: async (setupData) => {
     const response = await axiosClient.post('/auth/setup-password', setupData);
     return response.data;
