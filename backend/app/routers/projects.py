@@ -9,7 +9,10 @@ router = APIRouter(prefix="/projects", tags=["Projects"])
 
 @router.get("", response_model=List[ProjectOut])
 async def list_projects(current_user: User = Depends(get_current_user)):
-    projects = await Project.find_all().to_list()
+    if current_user.role in ["manager", "admin"]:
+        projects = await Project.find_all().to_list()
+    else:
+        projects = await Project.find({"assigned_members": str(current_user.id)}).to_list()
     return [
         ProjectOut(
             id=str(p.id),
@@ -17,6 +20,7 @@ async def list_projects(current_user: User = Depends(get_current_user)):
             description=p.description or "",
             status=p.status,
             created_by=p.created_by,
+            assigned_members=p.assigned_members,
             created_at=p.created_at
         )
         for p in projects
@@ -31,7 +35,8 @@ async def create_project(
         name=project_in.name,
         description=project_in.description or "",
         status=project_in.status or "active",
-        created_by=str(current_user.id)
+        created_by=str(current_user.id),
+        assigned_members=project_in.assigned_members or []
     )
     await project.insert()
     return ProjectOut(
@@ -40,6 +45,7 @@ async def create_project(
         description=project.description or "",
         status=project.status,
         created_by=project.created_by,
+        assigned_members=project.assigned_members,
         created_at=project.created_at
     )
 
@@ -59,6 +65,8 @@ async def update_project(
         project.description = project_in.description
     if project_in.status is not None:
         project.status = project_in.status
+    if project_in.assigned_members is not None:
+        project.assigned_members = project_in.assigned_members
         
     await project.save()
     return ProjectOut(
@@ -67,6 +75,7 @@ async def update_project(
         description=project.description or "",
         status=project.status,
         created_by=project.created_by,
+        assigned_members=project.assigned_members,
         created_at=project.created_at
     )
 

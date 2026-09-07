@@ -12,12 +12,12 @@ import ReportStatusDistributionChart from '../components/dashboard/ReportStatusD
 import BlockersByProjectChart from '../components/dashboard/BlockersByProjectChart';
 import TeamMemberProgressTable from '../components/dashboard/TeamMemberProgressTable';
 import RecentActivityFeed from '../components/dashboard/RecentActivityFeed';
+
 import { LayoutDashboard, UserCheck } from 'lucide-react';
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
   const isManagerOrAdmin = user?.role === 'manager' || user?.role === 'admin';
-  const [activeView, setActiveView] = useState(isManagerOrAdmin ? 'manager' : 'member');
 
   const [summary, setSummary] = useState({});
   const [tasksTrend, setTasksTrend] = useState([]);
@@ -32,7 +32,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     async function loadDashboardData() {
-      if (!isManagerOrAdmin && activeView === 'manager') return;
+      if (!isManagerOrAdmin) return;
       setLoading(true);
       try {
         const [
@@ -70,7 +70,7 @@ export default function DashboardPage() {
       }
     }
     loadDashboardData();
-  }, [activeView, isManagerOrAdmin]);
+  }, [isManagerOrAdmin]);
 
   const handleFilterChange = (key, val) => {
     if (key === 'reset') {
@@ -81,80 +81,9 @@ export default function DashboardPage() {
   };
 
   // If user is a member, render Member Dashboard directly
-  if (!isManagerOrAdmin || activeView === 'member') {
+  if (!isManagerOrAdmin) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {/* View Switcher Bar for Managers */}
-        {isManagerOrAdmin && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            backgroundColor: '#FFFFFF',
-            borderRadius: '16px',
-            padding: '12px 20px',
-            border: '1px solid #E2E8F0',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.02)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '0.875rem', fontWeight: '700', color: '#0F2942' }}>
-                Dashboard View:
-              </span>
-              <span style={{ fontSize: '0.8125rem', color: '#64748B' }}>
-                Viewing your personal member dashboard
-              </span>
-            </div>
-
-            <div style={{
-              display: 'inline-flex',
-              backgroundColor: '#F1F5F9',
-              borderRadius: '12px',
-              padding: '4px'
-            }}>
-              <button
-                onClick={() => setActiveView('manager')}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  padding: '6px 16px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  fontSize: '0.8125rem',
-                  fontWeight: '700',
-                  cursor: 'pointer',
-                  backgroundColor: 'transparent',
-                  color: '#64748B'
-                }}
-              >
-                <LayoutDashboard size={15} />
-                Team Manager View
-              </button>
-
-              <button
-                onClick={() => setActiveView('member')}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  padding: '6px 16px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  fontSize: '0.8125rem',
-                  fontWeight: '700',
-                  cursor: 'pointer',
-                  backgroundColor: '#FFFFFF',
-                  color: '#0D8A6A',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.06)'
-                }}
-              >
-                <UserCheck size={15} />
-                My Member View
-              </button>
-            </div>
-          </div>
-        )}
-
         <MemberDashboardPage />
       </div>
     );
@@ -177,75 +106,6 @@ export default function DashboardPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      
-      {/* View Switcher Toolbar */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        backgroundColor: '#FFFFFF',
-        borderRadius: '16px',
-        padding: '12px 20px',
-        border: '1px solid #E2E8F0',
-        boxShadow: '0 2px 6px rgba(0,0,0,0.02)'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '0.875rem', fontWeight: '700', color: '#0F2942' }}>
-            Dashboard View:
-          </span>
-          <span style={{ fontSize: '0.8125rem', color: '#64748B' }}>
-            Viewing overall team performance & analytics
-          </span>
-        </div>
-
-        <div style={{
-          display: 'inline-flex',
-          backgroundColor: '#F1F5F9',
-          borderRadius: '12px',
-          padding: '4px'
-        }}>
-          <button
-            onClick={() => setActiveView('manager')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '6px 16px',
-              borderRadius: '8px',
-              border: 'none',
-              fontSize: '0.8125rem',
-              fontWeight: '700',
-              cursor: 'pointer',
-              backgroundColor: '#FFFFFF',
-              color: '#0D8A6A',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.06)'
-            }}
-          >
-            <LayoutDashboard size={15} />
-            Team Manager View
-          </button>
-
-          <button
-            onClick={() => setActiveView('member')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '6px 16px',
-              borderRadius: '8px',
-              border: 'none',
-              fontSize: '0.8125rem',
-              fontWeight: '700',
-              cursor: 'pointer',
-              backgroundColor: 'transparent',
-              color: '#64748B'
-            }}
-          >
-            <UserCheck size={15} />
-            My Member View
-          </button>
-        </div>
-      </div>
 
       {/* Top Filter Toolbar */}
       <FilterBar
@@ -275,10 +135,10 @@ export default function DashboardPage() {
         gridTemplateColumns: 'minmax(0, 1.85fr) minmax(0, 1fr)',
         gap: '20px'
       }}>
-        <div style={{ minWidth: 0 }}>
+        <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <TeamMemberProgressTable members={members} statusByMember={statusByMember} />
         </div>
-        <div style={{ minWidth: 0 }}>
+        <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <RecentActivityFeed activities={activities} />
         </div>
       </div>

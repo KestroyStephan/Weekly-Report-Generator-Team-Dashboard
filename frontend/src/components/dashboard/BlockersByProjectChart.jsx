@@ -9,7 +9,7 @@ export default function BlockersByProjectChart({ projects = [] }) {
     color: colors[idx % colors.length]
   })) : [];
 
-  const maxCount = Math.max(...items.map(i => i.count), 1);
+  const maxCount = Math.max(...items.map(i => i.count), 10);
 
   return (
     <div style={{

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { projectsApi } from '../api/projectsApi';
+import { usersApi } from '../api/usersApi';
 import { useUIStore } from '../store/uiStore';
 import ProjectTable, { STATUS_CONFIG } from '../components/projects/ProjectTable';
 import ConfirmModal from '../components/common/ConfirmModal';
@@ -202,6 +203,7 @@ function StatusFilterDropdown({ statusFilter, setStatusFilter, metrics }) {
 
 export default function ProjectManagementPage() {
   const [projects, setProjects] = useState([]);
+  const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -212,6 +214,7 @@ export default function ProjectManagementPage() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('active');
+  const [assignedMembers, setAssignedMembers] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Delete Confirmation State
@@ -220,11 +223,15 @@ export default function ProjectManagementPage() {
 
   const { addToast } = useUIStore();
 
-  const loadProjects = async () => {
+  const loadData = async () => {
     setLoading(true);
     try {
-      const data = await projectsApi.getProjects();
-      setProjects(data);
+      const [projData, usersData] = await Promise.all([
+        projectsApi.getProjects(),
+        usersApi.getUsers().catch(() => [])
+      ]);
+      setProjects(projData);
+      setMembers(usersData);
     } catch (err) {
       addToast("Failed to load projects list", "error");
     } finally {
@@ -233,7 +240,7 @@ export default function ProjectManagementPage() {
   };
 
   useEffect(() => {
-    loadProjects();
+    loadData();
   }, []);
 
   // Compute Metrics & Counts
@@ -269,6 +276,7 @@ export default function ProjectManagementPage() {
     setName('');
     setDescription('');
     setStatus('active');
+    setAssignedMembers([]);
     setIsModalOpen(true);
   };
 
@@ -277,6 +285,7 @@ export default function ProjectManagementPage() {
     setName(proj.name);
     setDescription(proj.description || '');
     setStatus((proj.status || 'active').toLowerCase());
+    setAssignedMembers(proj.assigned_members || []);
     setIsModalOpen(true);
   };
 
@@ -291,14 +300,14 @@ export default function ProjectManagementPage() {
     try {
       if (editingProject) {
         const id = editingProject.id || editingProject._id;
-        await projectsApi.updateProject(id, { name, description, status });
+        await projectsApi.updateProject(id, { name, description, status, assigned_members: assignedMembers });
         addToast("Project updated successfully!", "success");
       } else {
-        await projectsApi.createProject({ name, description, status });
+        await projectsApi.createProject({ name, description, status, assigned_members: assignedMembers });
         addToast("Project created successfully!", "success");
       }
       setIsModalOpen(false);
-      loadProjects();
+      loadData();
     } catch (err) {
       addToast(err.response?.data?.detail || "Operation failed", "error");
     } finally {
@@ -318,7 +327,7 @@ export default function ProjectManagementPage() {
       await projectsApi.deleteProject(deleteConfirm.id);
       addToast(`Project "${deleteConfirm.name}" deleted successfully`, "success");
       setDeleteConfirm({ isOpen: false, id: null, name: '' });
-      loadProjects();
+      loadData();
     } catch (err) {
       addToast("Failed to delete project", "error");
     } finally {
@@ -528,6 +537,63 @@ export default function ProjectManagementPage() {
                 <strong>Status Definition:</strong> {STATUS_CONFIG[status].meaning}
               </div>
             )}
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <label style={{ fontSize: '0.875rem', fontWeight: '700', color: '#0F2942' }}>
+              Assign Team Members
+            </label>
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '8px',
+              padding: '12px',
+              border: '1.5px solid #CBD5E1',
+              borderRadius: '12px',
+              maxHeight: '150px',
+              overflowY: 'auto'
+            }}>
+              {members.map(member => {
+                const memberId = member.id || member._id;
+                const isAssigned = assignedMembers.includes(memberId);
+                return (
+                  <label key={memberId} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '6px 12px',
+                    borderRadius: '8px',
+                    backgroundColor: isAssigned ? '#ECFDF5' : '#F1F5F9',
+                    border: isAssigned ? '1px solid #10B981' : '1px solid transparent',
+                    cursor: 'pointer',
+                    fontSize: '0.875rem',
+                    fontWeight: isAssigned ? '600' : '500',
+                    color: isAssigned ? '#065F46' : '#475569',
+                    transition: 'all 0.2s'
+                  }}>
+                    <input
+                      type="checkbox"
+                      checked={isAssigned}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setAssignedMembers([...assignedMembers, memberId]);
+                        } else {
+                          setAssignedMembers(assignedMembers.filter(id => id !== memberId));
+                        }
+                      }}
+                      style={{ margin: 0, accentColor: '#10B981' }}
+                    />
+                    {member.name}
+                  </label>
+                );
+              })}
+              {members.length === 0 && (
+                <span style={{ fontSize: '0.8125rem', color: '#94A3B8' }}>No team members available</span>
+              )}
+            </div>
+            <span style={{ fontSize: '0.75rem', color: '#64748B' }}>
+              Selected members will be able to submit reports for this project.
+            </span>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '12px' }}>

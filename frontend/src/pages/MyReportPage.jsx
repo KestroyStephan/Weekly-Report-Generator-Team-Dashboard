@@ -25,11 +25,12 @@ export default function MyReportPage() {
         const projData = await projectsApi.getProjects();
         setProjects(projData);
 
-        // Get or initialize current week draft
         const reportData = await reportsApi.createReport({
           week_start_date: weekRange.week_start_date,
           week_end_date: weekRange.week_end_date
         });
+
+
         setReport(reportData);
       } catch (err) {
         console.error("Error loading current report:", err);

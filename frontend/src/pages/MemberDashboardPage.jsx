@@ -3,6 +3,7 @@ import MemberSummaryCards from '../components/dashboard/member/MemberSummaryCard
 import ThisWeekReportBanner from '../components/dashboard/member/ThisWeekReportBanner';
 import MyGoalsWidget from '../components/dashboard/member/MyGoalsWidget';
 import RecentTasksWidget from '../components/dashboard/member/RecentTasksWidget';
+
 import BlockersWidget from '../components/dashboard/member/BlockersWidget';
 import RecentReportsWidget from '../components/dashboard/member/RecentReportsWidget';
 import MotivationalQuoteCard from '../components/dashboard/member/MotivationalQuoteCard';
