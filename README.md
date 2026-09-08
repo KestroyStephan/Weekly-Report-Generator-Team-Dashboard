@@ -1,5 +1,7 @@
 # Weekly Report Generator & Team Dashboard
 
+🚀 **Live Demo:** [https://weekly-report-generator-team-dashbo-psi.vercel.app](https://weekly-report-generator-team-dashbo-psi.vercel.app)
+
 A modern full-stack web application designed for team-wide structured weekly reporting, a multi-stage manager review & correction workflow, consolidated team analytics, and an integrated RAG AI Voice Assistant.
 
 ---
