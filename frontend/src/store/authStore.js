@@ -2,8 +2,8 @@ import { create } from 'zustand';
 import { authApi } from '../api/authApi';
 
 export const useAuthStore = create((set) => ({
-  user: JSON.parse(localStorage.getItem('user')) || null,
-  isAuthenticated: !!localStorage.getItem('access_token'),
+  user: JSON.parse(sessionStorage.getItem('user')) || null,
+  isAuthenticated: !!sessionStorage.getItem('access_token'),
   isLoading: false,
   error: null,
 
@@ -11,8 +11,8 @@ export const useAuthStore = create((set) => ({
     set({ isLoading: true, error: null });
     try {
       const data = await authApi.login(credentials);
-      localStorage.setItem('access_token', data.access_token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      sessionStorage.setItem('access_token', data.access_token);
+      sessionStorage.setItem('user', JSON.stringify(data.user));
       set({ user: data.user, isAuthenticated: true, isLoading: false });
       return data.user;
     } catch (err) {
@@ -41,21 +41,21 @@ export const useAuthStore = create((set) => ({
     } catch (err) {
       // Ignore logout errors
     } finally {
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('user');
+      sessionStorage.removeItem('access_token');
+      sessionStorage.removeItem('user');
       set({ user: null, isAuthenticated: false });
     }
   },
 
   checkAuth: async () => {
-    if (!localStorage.getItem('access_token')) return;
+    if (!sessionStorage.getItem('access_token')) return;
     try {
       const user = await authApi.getMe();
-      localStorage.setItem('user', JSON.stringify(user));
+      sessionStorage.setItem('user', JSON.stringify(user));
       set({ user, isAuthenticated: true });
     } catch (err) {
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('user');
+      sessionStorage.removeItem('access_token');
+      sessionStorage.removeItem('user');
       set({ user: null, isAuthenticated: false });
     }
   },
@@ -64,7 +64,7 @@ export const useAuthStore = create((set) => ({
     set({ isLoading: true, error: null });
     try {
       const updatedUser = await authApi.updateMe(profileData);
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+      sessionStorage.setItem('user', JSON.stringify(updatedUser));
       set({ user: updatedUser, isLoading: false });
       return updatedUser;
     } catch (err) {

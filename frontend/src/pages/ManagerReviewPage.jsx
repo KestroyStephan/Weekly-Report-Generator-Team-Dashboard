@@ -31,11 +31,7 @@ export default function ManagerReviewPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <div>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--color-text-primary)' }}>
-          Manager Review Queue
-        </h2>
-      </div>
+
 
       {loading ? (
         <div style={{ padding: '32px', textAlign: 'center', color: 'var(--color-text-muted)' }}>Loading review queue...</div>

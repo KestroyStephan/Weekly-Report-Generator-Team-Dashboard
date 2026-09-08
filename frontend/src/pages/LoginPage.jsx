@@ -7,9 +7,9 @@ import loginIllustration from '../assets/login_illustration.png';
 import logoImg from '../assets/Logo.png';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(true);
+  const [email, setEmail] = useState(localStorage.getItem('rememberedEmail') || '');
+  const [password, setPassword] = useState(localStorage.getItem('rememberedPassword') || '');
+  const [rememberMe, setRememberMe] = useState(localStorage.getItem('rememberMe') !== 'false');
   const [showPassword, setShowPassword] = useState(false);
   const [isEmailFocused, setIsEmailFocused] = useState(false);
   const [isPassFocused, setIsPassFocused] = useState(false);
@@ -25,6 +25,15 @@ export default function LoginPage() {
       return;
     }
     try {
+      if (rememberMe) {
+        localStorage.setItem('rememberedEmail', email);
+        localStorage.setItem('rememberedPassword', password);
+        localStorage.setItem('rememberMe', 'true');
+      } else {
+        localStorage.removeItem('rememberedEmail');
+        localStorage.removeItem('rememberedPassword');
+        localStorage.setItem('rememberMe', 'false');
+      }
       const user = await login({ email, password });
       addToast(`Welcome back, ${user.name}!`, 'success');
       if (user.role === 'manager' || user.role === 'admin') {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import logoImg from '../../assets/Logo.png';
+import logoImg from '../../assets/Menulogo.png';
 import {
   FileText,
   BarChart3,
@@ -50,9 +50,9 @@ export default function Sidebar() {
           src={logoImg}
           alt="WorkPulse Logo"
           style={{
-            height: '52px',
+            height: '42px',
             width: 'auto',
-            maxHeight: '52px',
+            maxHeight: '42px',
             objectFit: 'contain'
           }}
         />

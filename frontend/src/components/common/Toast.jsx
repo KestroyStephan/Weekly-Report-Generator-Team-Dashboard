@@ -10,7 +10,7 @@ export default function Toast() {
   return (
     <div style={{
       position: 'fixed',
-      bottom: '24px',
+      top: '24px',
       right: '24px',
       zIndex: 2000,
       display: 'flex',

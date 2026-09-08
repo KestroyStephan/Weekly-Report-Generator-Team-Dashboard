@@ -13,7 +13,7 @@ const axiosClient = axios.create({
 // Request Interceptor: Attach Access Token
 axiosClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('access_token');
+    const token = sessionStorage.getItem('access_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -34,12 +34,12 @@ axiosClient.interceptors.response.use(
       try {
         const refreshResp = await axios.post(`${BASE_URL}/auth/refresh`, {}, { withCredentials: true });
         const { access_token } = refreshResp.data;
-        localStorage.setItem('access_token', access_token);
+        sessionStorage.setItem('access_token', access_token);
         originalRequest.headers.Authorization = `Bearer ${access_token}`;
         return axiosClient(originalRequest);
       } catch (refreshErr) {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('user');
+        sessionStorage.removeItem('access_token');
+        sessionStorage.removeItem('user');
         window.location.href = '/login';
         return Promise.reject(refreshErr);
       }

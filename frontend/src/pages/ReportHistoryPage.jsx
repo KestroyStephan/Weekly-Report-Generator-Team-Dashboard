@@ -8,12 +8,14 @@ import Select from '../components/common/Select';
 import EmptyState from '../components/common/EmptyState';
 import { Eye, FileText } from 'lucide-react';
 import { formatDate } from '../utils/dateHelpers';
+import FilterBar from '../components/dashboard/FilterBar';
 
 export default function ReportHistoryPage() {
   const [reports, setReports] = useState([]);
   const [projects, setProjects] = useState([]);
   const [statusFilter, setStatusFilter] = useState('');
   const [projectFilter, setProjectFilter] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -36,50 +38,39 @@ export default function ReportHistoryPage() {
     loadReports();
   }, [statusFilter, projectFilter]);
 
+  const filteredReports = reports.filter((rep) => {
+    if (!searchTerm) return true;
+    const q = searchTerm.toLowerCase();
+    const userName = (rep.user_name || '').toLowerCase();
+    const projName = (rep.project_name || '').toLowerCase();
+    return userName.includes(q) || projName.includes(q);
+  });
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {/* Filter Bar */}
-      <div style={{
-        backgroundColor: '#FFFFFF',
-        padding: '16px 20px',
-        borderRadius: 'var(--radius-md)',
-        border: '1px solid var(--color-card-border)',
-        boxShadow: 'var(--shadow-sm)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '16px',
-        flexWrap: 'wrap'
-      }}>
-        <span style={{ fontSize: '0.875rem', fontWeight: '600', color: 'var(--color-text-secondary)' }}>Filters:</span>
-        <div style={{ width: '180px' }}>
-          <Select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            options={[
-              { value: '', label: 'All Statuses' },
-              { value: 'draft', label: 'Draft' },
-              { value: 'submitted', label: 'Submitted' },
-              { value: 'needs_correction', label: 'Needs Correction' },
-              { value: 'approved', label: 'Approved' }
-            ]}
-          />
-        </div>
-        <div style={{ width: '200px' }}>
-          <Select
-            value={projectFilter}
-            onChange={(e) => setProjectFilter(e.target.value)}
-            options={[
-              { value: '', label: 'All Projects' },
-              ...projects.map((p) => ({ value: p.id, label: p.name }))
-            ]}
-          />
-        </div>
-      </div>
+      <FilterBar
+        showSearch={true}
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        filters={{ status: statusFilter, project_id: projectFilter }}
+        onFilterChange={(key, value) => {
+          if (key === 'reset') {
+            setStatusFilter('');
+            setProjectFilter('');
+            setSearchTerm('');
+          } else if (key === 'status') {
+            setStatusFilter(value);
+          } else if (key === 'project_id') {
+            setProjectFilter(value);
+          }
+        }}
+        projects={projects}
+      />
 
       {/* Reports Table */}
       {loading ? (
         <div style={{ padding: '32px', textAlign: 'center', color: 'var(--color-text-muted)' }}>Loading reports...</div>
-      ) : reports.length === 0 ? (
+      ) : filteredReports.length === 0 ? (
         <EmptyState title="No weekly reports found" description="No reports match your selected filters." icon={FileText} />
       ) : (
         <div style={{ backgroundColor: '#FFFFFF', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-card-border)', overflow: 'hidden' }}>
@@ -96,7 +87,7 @@ export default function ReportHistoryPage() {
               </tr>
             </thead>
             <tbody>
-              {reports.map((rep) => (
+              {filteredReports.map((rep) => (
                 <tr key={rep.id} style={{ borderBottom: '1px solid var(--color-card-border)' }}>
                   <td style={{ padding: '12px 16px', fontWeight: '600', color: 'var(--color-text-primary)' }}>
                     {rep.week_start_date} to {rep.week_end_date}
