@@ -125,15 +125,19 @@ class AIService:
         # 5. CALL AI PROVIDERS
         if settings.GROK_API_KEY:
             try:
+                is_groq = settings.GROK_API_KEY.startswith("gsk_")
+                api_url = "https://api.groq.com/openai/v1/chat/completions" if is_groq else "https://api.x.ai/v1/chat/completions"
+                model_name = "llama-3.1-8b-instant" if is_groq else (settings.GROK_MODEL or "grok-beta")
+                
                 async with httpx.AsyncClient(timeout=15.0) as client:
                     resp = await client.post(
-                        "https://api.x.ai/v1/chat/completions",
+                        api_url,
                         headers={
                             "Authorization": f"Bearer {settings.GROK_API_KEY}",
                             "Content-Type": "application/json"
                         },
                         json={
-                            "model": settings.GROK_MODEL or "grok-beta",
+                            "model": model_name,
                             "messages": [
                                 {"role": "system", "content": system_instructions},
                                 {"role": "user", "content": full_prompt}
@@ -146,8 +150,10 @@ class AIService:
                         data = resp.json()
                         res_text = data["choices"][0]["message"]["content"]
                         return cls._clean_markdown(res_text)
+                    else:
+                        logger.warning(f"Cloud AI API error ({resp.status_code}): {resp.text}")
             except Exception as e:
-                logger.warning(f"Grok API error: {e}")
+                logger.warning(f"Cloud AI API Exception: {e}")
 
         base_url = settings.OLLAMA_BASE_URL.rstrip('/')
         ollama_gen_url = f"{base_url}/api/generate"
