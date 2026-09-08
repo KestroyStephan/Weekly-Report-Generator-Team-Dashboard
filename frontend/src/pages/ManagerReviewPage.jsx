@@ -15,11 +15,8 @@ export default function ManagerReviewPage() {
   const loadSubmittedReports = async () => {
     setLoading(true);
     try {
-      // Fetch reports with status=submitted
       const data = await reportsApi.getReports({ status: 'submitted' });
       setReports(data);
-    } catch (err) {
-      console.error("Error loading manager review queue:", err);
     } finally {
       setLoading(false);
     }
@@ -31,7 +28,6 @@ export default function ManagerReviewPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-
 
       {loading ? (
         <div style={{ padding: '32px', textAlign: 'center', color: 'var(--color-text-muted)' }}>Loading review queue...</div>

@@ -19,7 +19,6 @@ export default function VersionHistoryPanel({ reportId, currentVersion }) {
           setSelectedVersion(data[data.length - 1]); // default to latest snapshot
         }
       })
-      .catch((err) => console.error("Error fetching version history:", err))
       .finally(() => setLoading(false));
   }, [reportId]);
 

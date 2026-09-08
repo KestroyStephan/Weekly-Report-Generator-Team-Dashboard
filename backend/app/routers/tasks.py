@@ -3,8 +3,8 @@ from typing import List
 from datetime import datetime
 from app.models.task import Task
 from app.models.user import User
-from app.routers.auth import get_current_user
-from pydantic import BaseModel, Field
+from app.deps import get_current_user
+from pydantic import BaseModel
 from beanie import PydanticObjectId
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
@@ -38,13 +38,11 @@ async def create_task(task_in: TaskCreate, current_user: User = Depends(get_curr
 
 @router.get("/assigned", response_model=List[Task])
 async def get_assigned_tasks(current_user: User = Depends(get_current_user)):
-    # Members get tasks assigned to them
     tasks = await Task.find(Task.assigned_to == str(current_user.id)).sort("-created_at").to_list()
     return tasks
 
 @router.get("/created", response_model=List[Task])
 async def get_created_tasks(current_user: User = Depends(get_current_user)):
-    # Managers get tasks they created
     tasks = await Task.find(Task.created_by == str(current_user.id)).sort("-created_at").to_list()
     return tasks
 

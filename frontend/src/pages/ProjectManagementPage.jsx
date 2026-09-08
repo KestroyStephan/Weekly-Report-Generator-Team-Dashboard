@@ -24,7 +24,6 @@ import {
   Check
 } from 'lucide-react';
 
-// Custom Attractive Status Filter Dropdown Component
 function StatusFilterDropdown({ statusFilter, setStatusFilter, metrics }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -113,7 +112,6 @@ function StatusFilterDropdown({ statusFilter, setStatusFilter, metrics }) {
         />
       </button>
 
-      {/* Floating Filter Menu Dropdown */}
       {isOpen && (
         <div style={{
           position: 'absolute',
@@ -208,7 +206,6 @@ export default function ProjectManagementPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [name, setName] = useState('');
@@ -217,7 +214,6 @@ export default function ProjectManagementPage() {
   const [assignedMembers, setAssignedMembers] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Delete Confirmation State
   const [deleteConfirm, setDeleteConfirm] = useState({ isOpen: false, id: null, name: '' });
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -243,7 +239,6 @@ export default function ProjectManagementPage() {
     loadData();
   }, []);
 
-  // Compute Metrics & Counts
   const metrics = useMemo(() => {
     const total = projects.length;
     const active = projects.filter((p) => (p.status || 'active').toLowerCase() === 'active').length;
@@ -255,7 +250,6 @@ export default function ProjectManagementPage() {
     return { total, active, inProgress, onHold, completed, archived };
   }, [projects]);
 
-  // Filter Projects by Search and Status
   const filteredProjects = useMemo(() => {
     return projects.filter((proj) => {
       const q = searchTerm.toLowerCase().trim();
@@ -338,7 +332,6 @@ export default function ProjectManagementPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
-      {/* Search & Filter Toolbar Controls Card */}
       <div style={{
         backgroundColor: '#FFFFFF',
         borderRadius: '20px',
@@ -356,9 +349,7 @@ export default function ProjectManagementPage() {
           flexWrap: 'wrap',
           gap: '16px'
         }}>
-          {/* Search + Custom Status Dropdown Controls */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: '1 1 480px', flexWrap: 'wrap' }}>
-            {/* Live Search Input */}
             <div style={{ position: 'relative', flex: '1 1 260px', maxWidth: '380px' }}>
               <Search size={18} color="#0D8A6A" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
               <input
@@ -411,7 +402,6 @@ export default function ProjectManagementPage() {
               )}
             </div>
 
-            {/* Custom Status Filter Dropdown */}
             <StatusFilterDropdown
               statusFilter={statusFilter}
               setStatusFilter={setStatusFilter}
@@ -419,14 +409,12 @@ export default function ProjectManagementPage() {
             />
           </div>
 
-          {/* Primary Action Button */}
           <Button variant="primary" icon={Plus} onClick={handleOpenCreateModal}>
             Add New Project
           </Button>
         </div>
       </div>
 
-      {/* Main Projects Table */}
       {loading ? (
         <div style={{
           backgroundColor: '#FFFFFF',
@@ -446,7 +434,6 @@ export default function ProjectManagementPage() {
         />
       )}
 
-      {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={deleteConfirm.isOpen}
         title="Delete Project?"
@@ -459,7 +446,6 @@ export default function ProjectManagementPage() {
         isLoading={isDeleting}
       />
 
-      {/* Create / Edit Project Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

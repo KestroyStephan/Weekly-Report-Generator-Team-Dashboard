@@ -32,7 +32,6 @@ export default function ReportDetailPage() {
         setReport(repData);
         setProjects(projData);
       } catch (err) {
-        console.error("Error loading report detail:", err);
         addToast("Failed to load report detail", "error");
       } finally {
         setLoading(false);

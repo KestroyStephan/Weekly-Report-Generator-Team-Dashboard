@@ -12,7 +12,7 @@ export default function AssignedTasksWidget() {
         const data = await taskApi.getAssignedTasks();
         setTasks(data.filter(t => t.status !== 'done'));
       } catch (err) {
-        console.error("Error loading assigned tasks", err);
+        // Handle error
       } finally {
         setLoading(false);
       }
@@ -25,7 +25,7 @@ export default function AssignedTasksWidget() {
       await taskApi.updateTaskStatus(taskId, 'done');
       setTasks(tasks.filter(t => t._id !== taskId && t.id !== taskId));
     } catch (err) {
-      console.error("Failed to update task", err);
+      // Handle error
     }
   };
 

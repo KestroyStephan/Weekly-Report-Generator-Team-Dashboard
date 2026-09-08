@@ -13,8 +13,6 @@ import BlockersByProjectChart from '../components/dashboard/BlockersByProjectCha
 import TeamMemberProgressTable from '../components/dashboard/TeamMemberProgressTable';
 import RecentActivityFeed from '../components/dashboard/RecentActivityFeed';
 
-import { LayoutDashboard, UserCheck } from 'lucide-react';
-
 export default function DashboardPage() {
   const { user } = useAuthStore();
   const isManagerOrAdmin = user?.role === 'manager' || user?.role === 'admin';
@@ -63,8 +61,6 @@ export default function DashboardPage() {
         setActivities(actData);
         setMembers(userData);
         setProjects(projData);
-      } catch (err) {
-        console.error("Error loading dashboard data:", err);
       } finally {
         setLoading(false);
       }
@@ -80,7 +76,6 @@ export default function DashboardPage() {
     }
   };
 
-  // If user is a member, render Member Dashboard directly
   if (!isManagerOrAdmin) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -106,8 +101,6 @@ export default function DashboardPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-
-      {/* Top Filter Toolbar */}
       <FilterBar
         filters={filters}
         onFilterChange={handleFilterChange}
@@ -115,10 +108,8 @@ export default function DashboardPage() {
         projects={projects}
       />
 
-      {/* Top 5 KPI Summary Cards */}
       <SummaryCards summary={summary} membersCount={members.length} />
 
-      {/* Charts Row 1: 3 Column Grid */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
@@ -129,16 +120,13 @@ export default function DashboardPage() {
         <BlockersByProjectChart projects={workloadByProject.length > 0 ? workloadByProject : projects} />
       </div>
 
-      {/* Content Row 2: Team Member Progress (Full View) */}
       <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         <TeamMemberProgressTable members={members} statusByMember={statusByMember} projects={projects} />
       </div>
 
-      {/* Content Row 3: Recent Activity */}
       <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         <RecentActivityFeed activities={activities} />
       </div>
-
     </div>
   );
 }

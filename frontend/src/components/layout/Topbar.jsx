@@ -19,7 +19,7 @@ export default function Topbar({ title }) {
       setNotifications(data.notifications || []);
       setUnreadCount(data.unread_count || 0);
     } catch (err) {
-      console.error("Error fetching notifications:", err);
+      // Handle error gracefully
     }
   };
 
@@ -47,7 +47,7 @@ export default function Topbar({ title }) {
       setUnreadCount(0);
       setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
     } catch (err) {
-      console.error("Error marking all read:", err);
+      // Handle error gracefully
     }
   };
 

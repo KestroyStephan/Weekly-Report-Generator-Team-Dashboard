@@ -30,10 +30,8 @@ export default function MyReportPage() {
           week_end_date: weekRange.week_end_date
         });
 
-
         setReport(reportData);
       } catch (err) {
-        console.error("Error loading current report:", err);
         addToast("Failed to load current week report", "error");
       } finally {
         setLoading(false);
@@ -68,12 +66,10 @@ export default function MyReportPage() {
     setIsSubmitting(true);
     setShowSubmitConfirm(false);
     try {
-      // First save content updates
       await reportsApi.updateReport(report.id, {
         project_id: report.project_id,
         content: report.content
       });
-      // Then trigger submit action
       const submitted = await reportsApi.submitReport(report.id);
       setReport(submitted);
       addToast("Report submitted successfully for manager review!", "success");

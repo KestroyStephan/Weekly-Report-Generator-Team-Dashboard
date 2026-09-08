@@ -33,8 +33,7 @@ export default function QuickAssignTaskWidget({ members, projects }) {
       });
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
-      console.error(error);
-      setMessage('Failed to assign task.');
+      addToast(error.response?.data?.detail || "Failed to create task", "error");
     } finally {
       setLoading(false);
     }

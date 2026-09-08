@@ -17,6 +17,15 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
     user: UserOut
 
+def _map_user(u: User) -> UserOut:
+    return UserOut(
+        id=str(u.id),
+        name=u.name,
+        email=u.email,
+        role=u.role,
+        created_at=u.created_at
+    )
+
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 async def register(user_in: UserCreate):
     existing_user = await User.find_one(User.email == user_in.email)
@@ -26,7 +35,6 @@ async def register(user_in: UserCreate):
             detail="Email address is already registered"
         )
     
-    # Valid roles: member, manager, admin
     role = user_in.role if user_in.role in ["member", "manager", "admin"] else "member"
     
     user = User(
@@ -36,13 +44,7 @@ async def register(user_in: UserCreate):
         role=role
     )
     await user.insert()
-    return UserOut(
-        id=str(user.id),
-        name=user.name,
-        email=user.email,
-        role=user.role,
-        created_at=user.created_at
-    )
+    return _map_user(user)
 
 @router.post("/login", response_model=TokenResponse)
 async def login(credentials: UserLogin, response: Response):
@@ -56,7 +58,6 @@ async def login(credentials: UserLogin, response: Response):
     access_token = create_access_token({"sub": str(user.id), "role": user.role, "email": user.email})
     refresh_token = create_refresh_token({"sub": str(user.id)})
     
-    # Set httpOnly cookie for refresh token
     response.set_cookie(
         key="refresh_token",
         value=refresh_token,
@@ -66,15 +67,7 @@ async def login(credentials: UserLogin, response: Response):
         secure=False
     )
     
-    user_out = UserOut(
-        id=str(user.id),
-        name=user.name,
-        email=user.email,
-        role=user.role,
-        created_at=user.created_at
-    )
-    
-    return TokenResponse(access_token=access_token, user=user_out)
+    return TokenResponse(access_token=access_token, user=_map_user(user))
 
 @router.post("/refresh", response_model=TokenResponse)
 async def refresh_token(response: Response, refresh_token: Optional[str] = Cookie(None)):
@@ -102,15 +95,7 @@ async def refresh_token(response: Response, refresh_token: Optional[str] = Cooki
         secure=False
     )
     
-    user_out = UserOut(
-        id=str(user.id),
-        name=user.name,
-        email=user.email,
-        role=user.role,
-        created_at=user.created_at
-    )
-    
-    return TokenResponse(access_token=new_access_token, user=user_out)
+    return TokenResponse(access_token=new_access_token, user=_map_user(user))
 
 @router.post("/logout")
 async def logout(response: Response):
@@ -125,13 +110,7 @@ class ProfileUpdateRequest(BaseModel):
 
 @router.get("/me", response_model=UserOut)
 async def get_me(current_user: User = Depends(get_current_user)):
-    return UserOut(
-        id=str(current_user.id),
-        name=current_user.name,
-        email=current_user.email,
-        role=current_user.role,
-        created_at=current_user.created_at
-    )
+    return _map_user(current_user)
 
 @router.put("/me", response_model=UserOut)
 async def update_me(data: ProfileUpdateRequest, current_user: User = Depends(get_current_user)):
@@ -157,13 +136,7 @@ async def update_me(data: ProfileUpdateRequest, current_user: User = Depends(get
         current_user.password_hash = hash_password(data.new_password.strip())
         
     await current_user.save()
-    return UserOut(
-        id=str(current_user.id),
-        name=current_user.name,
-        email=current_user.email,
-        role=current_user.role,
-        created_at=current_user.created_at
-    )
+    return _map_user(current_user)
 
 @router.post("/setup-password")
 async def setup_password(data: SetupPasswordRequest):

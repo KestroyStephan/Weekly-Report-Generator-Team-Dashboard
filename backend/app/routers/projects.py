@@ -7,24 +7,24 @@ from app.deps import get_current_user, require_role
 
 router = APIRouter(prefix="/projects", tags=["Projects"])
 
+def _map_project(p: Project) -> ProjectOut:
+    return ProjectOut(
+        id=str(p.id),
+        name=p.name,
+        description=p.description or "",
+        status=p.status,
+        created_by=p.created_by,
+        assigned_members=p.assigned_members,
+        created_at=p.created_at
+    )
+
 @router.get("", response_model=List[ProjectOut])
 async def list_projects(current_user: User = Depends(get_current_user)):
     if current_user.role in ["manager", "admin"]:
         projects = await Project.find_all().to_list()
     else:
         projects = await Project.find({"assigned_members": str(current_user.id)}).to_list()
-    return [
-        ProjectOut(
-            id=str(p.id),
-            name=p.name,
-            description=p.description or "",
-            status=p.status,
-            created_by=p.created_by,
-            assigned_members=p.assigned_members,
-            created_at=p.created_at
-        )
-        for p in projects
-    ]
+    return [_map_project(p) for p in projects]
 
 @router.post("", response_model=ProjectOut, status_code=status.HTTP_201_CREATED)
 async def create_project(
@@ -39,15 +39,7 @@ async def create_project(
         assigned_members=project_in.assigned_members or []
     )
     await project.insert()
-    return ProjectOut(
-        id=str(project.id),
-        name=project.name,
-        description=project.description or "",
-        status=project.status,
-        created_by=project.created_by,
-        assigned_members=project.assigned_members,
-        created_at=project.created_at
-    )
+    return _map_project(project)
 
 @router.put("/{project_id}", response_model=ProjectOut)
 async def update_project(
@@ -69,15 +61,7 @@ async def update_project(
         project.assigned_members = project_in.assigned_members
         
     await project.save()
-    return ProjectOut(
-        id=str(project.id),
-        name=project.name,
-        description=project.description or "",
-        status=project.status,
-        created_by=project.created_by,
-        assigned_members=project.assigned_members,
-        created_at=project.created_at
-    )
+    return _map_project(project)
 
 @router.delete("/{project_id}")
 async def delete_project(

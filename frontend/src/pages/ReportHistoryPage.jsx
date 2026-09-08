@@ -29,8 +29,6 @@ export default function ReportHistoryPage() {
         ]);
         setReports(repData);
         setProjects(projData);
-      } catch (err) {
-        console.error("Error fetching report history:", err);
       } finally {
         setLoading(false);
       }
@@ -67,7 +65,6 @@ export default function ReportHistoryPage() {
         projects={projects}
       />
 
-      {/* Reports Table */}
       {loading ? (
         <div style={{ padding: '32px', textAlign: 'center', color: 'var(--color-text-muted)' }}>Loading reports...</div>
       ) : filteredReports.length === 0 ? (
