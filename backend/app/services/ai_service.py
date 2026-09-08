@@ -50,11 +50,11 @@ class AIService:
             line = f"Report [ID: {r.id}] | Member: {r.user_name} | Week: {r.week_start_date} | Status: {r.status} | Project: {r.project_name or 'N/A'}\n"
             if r.content:
                 if r.content.tasks_completed:
-                    tasks_list = ", ".join([f"{t.title} ({t.status})" for t in r.content.tasks_completed])
+                    tasks_list = ", ".join([f"{t.task_name} ({t.status})" for t in r.content.tasks_completed])
                     line += f"  - Tasks: {tasks_list}\n"
                 
-                if r.content.next_week_goals:
-                    goals_list = ", ".join([f"{g.text} (Priority: {g.priority})" for g in r.content.next_week_goals])
+                if r.content.tasks_planned_next_week:
+                    goals_list = ", ".join([f"{g.task_name} (Priority: {g.priority})" for g in r.content.tasks_planned_next_week])
                     line += f"  - Goals: {goals_list}\n"
 
                 if r.content.achievements:
@@ -139,7 +139,7 @@ class AIService:
                                 {"role": "user", "content": full_prompt}
                             ],
                             "temperature": 0.1,
-                            "max_tokens": 150
+                            "max_tokens": 800
                         }
                     )
                     if resp.status_code == 200:
@@ -153,7 +153,7 @@ class AIService:
         ollama_gen_url = f"{base_url}/api/generate"
         
         try:
-            async with httpx.AsyncClient(timeout=25.0) as client:
+            async with httpx.AsyncClient(timeout=45.0) as client:
                 target_model = settings.OLLAMA_MODEL or "llama3.1:latest"
                 resp = await client.post(
                     ollama_gen_url,
@@ -165,7 +165,7 @@ class AIService:
                         "options": {
                             "temperature": 0.1,
                             "top_p": 0.8,
-                            "num_predict": 150
+                            "num_predict": 800
                         }
                     }
                 )
