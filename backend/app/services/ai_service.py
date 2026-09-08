@@ -22,7 +22,6 @@ class AIService:
     async def get_team_members() -> List[str]:
         try:
             users = await User.find_all().to_list()
-            # Filter active team members (role == "member" only, strictly excluding admin/manager)
             members = [u.name for u in users if getattr(u, 'role', 'member') == 'member']
             if not members:
                 members = [u.name for u in users if u.role not in ['admin', 'manager']]
@@ -32,114 +31,98 @@ class AIService:
             return ["Elena Rostova", "Marcus Vance", "Sarah Chen"]
 
     @staticmethod
-    async def build_report_context(current_user: Optional[User] = None, week_start_date: Optional[str] = None) -> str:
+    async def build_report_context(current_user: User, week_start_date: Optional[str] = None) -> str:
         query = {}
         if week_start_date:
             query["week_start_date"] = week_start_date
         
-        # RBAC: Members can only see their own report context
-        if current_user and current_user.role == "member":
+        # STRICT RBAC: Members can only see their own report context
+        if current_user.role == "member":
             query["user_id"] = str(current_user.id)
             
-        reports = await Report.find(query).sort("-created_at").limit(15).to_list()
+        reports = await Report.find(query).sort("-created_at").limit(20).to_list()
         
         if not reports:
             return "No report data currently available."
 
         context_lines = []
         for r in reports:
-            line = f"- Member: {r.user_name} | Week: {r.week_start_date} | Status: {r.status} | Project: {r.project_name or 'N/A'}"
+            line = f"Report [ID: {r.id}] | Member: {r.user_name} | Week: {r.week_start_date} | Status: {r.status} | Project: {r.project_name or 'N/A'}\n"
             if r.content:
-                tasks_cnt = len(r.content.tasks_completed)
-                line += f" | Tasks Completed: {tasks_cnt}"
+                if r.content.tasks_completed:
+                    tasks_list = ", ".join([f"{t.title} ({t.status})" for t in r.content.tasks_completed])
+                    line += f"  - Tasks: {tasks_list}\n"
                 
-                key_achievements = [a.text for a in r.content.achievements if a.is_key_achievement]
-                if key_achievements:
-                    line += f" | Achievements: {'; '.join(key_achievements)}"
-                
-                key_blockers = [b.text for b in r.content.blockers if b.is_key_issue]
-                if key_blockers:
-                    line += f" | Blockers: {'; '.join(key_blockers)}"
-            context_lines.append(line)
+                if r.content.next_week_goals:
+                    goals_list = ", ".join([f"{g.text} (Priority: {g.priority})" for g in r.content.next_week_goals])
+                    line += f"  - Goals: {goals_list}\n"
 
-        return "\n".join(context_lines)
+                if r.content.achievements:
+                    achievements_list = ", ".join([f"{a.text} {'[KEY]' if getattr(a, 'is_key_achievement', False) else ''}" for a in r.content.achievements])
+                    line += f"  - Achievements: {achievements_list}\n"
+                
+                if r.content.blockers:
+                    blockers_list = ", ".join([f"{b.text} {'[KEY]' if getattr(b, 'is_key_issue', False) else ''}" for b in r.content.blockers])
+                    line += f"  - Blockers: {blockers_list}\n"
+            context_lines.append(line.strip())
+
+        return "\n\n".join(context_lines)
 
     @classmethod
     async def chat(cls, prompt: str, current_user: User, week_start_date: Optional[str] = None) -> str:
         prompt_lower = prompt.lower().strip()
-        member_names = await cls.get_team_members()
-        count = len(member_names)
 
-        # 0. GREETING INTENT HANDLING: "hii", "hello", "hey", etc.
+        # 0. GREETING INTENT HANDLING
         greetings = ["hi", "hii", "hiii", "hello", "hey", "heyy", "greetings", "good morning", "good afternoon", "good evening"]
         clean_words = re.findall(r'\w+', prompt_lower)
         if prompt_lower in greetings or (len(clean_words) == 1 and clean_words[0] in greetings):
             user_first_name = current_user.name.split()[0] if current_user and current_user.name else "there"
-            return f"Hello {user_first_name}! How can I help you today? Feel free to ask about team weekly progress, blockers, achievements, or specific member updates."
+            return f"Hello {user_first_name}! I am your role-aware ProgressHub Assistant. How can I help you today?"
 
-        # 1. COUNT QUERY: "how many employees", "how many users", "user count", etc.
-        is_count_only_query = any(k in prompt_lower for k in [
-            "how many user", "how many member", "how many employee", "how many staff",
-            "how many people", "user count", "member count", "employee count",
-            "count user", "count member", "count employee", "number of user",
-            "number of member", "number of employee", "total user", "total member", "total employee"
-        ]) and not any(k in prompt_lower for k in ["list", "who are", "names", "show", "them", "detail"])
+        # 1. PREVENT PROMPT INJECTION & INTERNAL REVELATIONS
+        injection_keywords = ["system prompt", "ignore previous instructions", "database credentials", "api keys", "secrets", "pretend i am", "give me all database records"]
+        if any(k in prompt_lower for k in injection_keywords):
+            return "I can help with authorized ProgressHub information, but I can't expose raw database records, internal system data, or override role instructions."
 
-        if is_count_only_query:
-            return f"There are {count} active team members in the application."
+        # 2. RBAC EXPLICIT OVERRIDES
+        if current_user.role == "member":
+            forbidden_topics = ["sarah's report", "everyone's blockers", "team performance", "lowest performance in the team", "manager say about another employee"]
+            if any(f in prompt_lower for f in forbidden_topics):
+                return "I can only provide information from your own reports and data. Team analytics are available to managers."
 
-        # 2. LIST QUERY: "list them", "list users", "list employees", "who are the members", etc.
-        is_list_query = any(k in prompt_lower for k in [
-            "list user", "list member", "list employee", "list them", "show user",
-            "show member", "show employee", "show them", "user list", "member list",
-            "employee list", "names of user", "names of member", "names of employee",
-            "who are the member", "who are the user", "who are the employee", "who are they",
-            "who is in application", "who are in application", "list all user",
-            "list all member", "list all employee", "all user", "all member", "all employee"
-        ])
-
-        if is_list_query:
-            members_list = "\n".join([f"{idx + 1}. {name}" for idx, name in enumerate(member_names)])
-            return f"Active team members:\n\n{members_list}"
-
-        # 3. MANAGER QUERY: Asking details for a Manager account like "kestroy stephan", "alex rivera"
-        manager_names = ["kestroy stephan", "alex rivera", "admin user", "manager"]
-        if any(m in prompt_lower for m in manager_names) and any(k in prompt_lower for k in ["detail", "info", "about", "give"]):
-            matched_name = next((m.title() for m in manager_names if m in prompt_lower), "This user")
-            return f"{matched_name} is a Team Manager. Manager details are managed under User & Role Management."
-
-        # 4. GENERAL REPORT & MEMBER DETAIL QUERIES
+        # 3. BUILD AUTHORIZED CONTEXT
         report_context = await cls.build_report_context(current_user, week_start_date)
 
-        system_instructions = (
-            "You are ProgressHub Assistant, an AI assistant for an engineering team.\n\n"
-            "STRICT CONCISE RESPONSE RULES:\n"
-            "1. Answer ONLY the specific question asked. Do NOT provide unasked details, extra background, or full project summaries.\n"
-            "2. Keep responses short, direct, and focused (1 to 2 sentences maximum).\n"
-            "3. Output clean, native human fluent plain text. Never use double asterisks ** or heading hashes (#).\n"
-            "4. Team members are strictly regular engineers (Elena Rostova, Marcus Vance, Sarah Chen). Do NOT list managers (Kestroy Stephan, Alex Rivera, Admin User).\n"
-            "5. Never output raw database dumps, zero metrics, or repeated dictionary lines.\n\n"
-            "TRAINING EXAMPLES:\n"
-            "User: how many employees\n"
-            "Assistant: There are 3 active team members in the application.\n\n"
-            "User: list them\n"
-            "Assistant: Active team members:\n1. Elena Rostova\n2. Marcus Vance\n3. Sarah Chen\n\n"
-            "User: what is elena working on\n"
-            "Assistant: Elena Rostova is working on interactive Recharts components for the Infrastructure & DevOps project.\n\n"
-            "User: any blockers for sarah\n"
-            "Assistant: Sarah Chen has no active blockers reported this week."
-        )
-        
+        # 4. CONSTRUCT ROLE-SPECIFIC PROMPT
+        if current_user.role == "member":
+            system_instructions = (
+                "You are ProgressHub Assistant, a personal productivity assistant for a team member.\n\n"
+                "STRICT CONSTRAINTS AND RULES:\n"
+                "1. DO NOT INVENT DATA. If the answer is not in the provided context, say 'I don't have enough information in the available ProgressHub data to answer that.'\n"
+                "2. DATA PRIVACY: You must NEVER provide information about other team members' reports, tasks, goals, or blockers. If asked about another member, say 'I can only provide information from your own reports and data.'\n"
+                "3. You can assist with writing and summarizing the user's own reports.\n"
+                "4. Keep responses concise, direct, and focused.\n"
+                "5. Output clean plain text. Never use double asterisks ** or heading hashes (#).\n"
+            )
+        else:
+            system_instructions = (
+                "You are ProgressHub Assistant, a team analytics and decision-support assistant for a manager.\n\n"
+                "STRICT CONSTRAINTS AND RULES:\n"
+                "1. DO NOT INVENT DATA. If the answer is not in the provided context, say 'I don't have enough information in the available ProgressHub data to answer that.'\n"
+                "2. FACT vs RECOMMENDATION: Distinguish clearly between data facts and your AI recommendations. Never present an AI assumption as a fact.\n"
+                "3. You can answer questions about team reporting status, pending reviews, blockers across the team, and workload distributions.\n"
+                "4. Keep responses concise. Use bullet points for summaries.\n"
+                "5. Output clean plain text. Never use double asterisks ** or heading hashes (#).\n"
+            )
+
         full_prompt = (
-            f"User Role: {current_user.role} ({current_user.name})\n"
-            f"Active Team Members Count: {count}\n"
-            f"Active Team Members List: {', '.join(member_names)}\n\n"
-            f"Team Reports Context Data:\n{report_context}\n\n"
+            f"Authorized User Context: Name={current_user.name}, Role={current_user.role}\n\n"
+            f"Available ProgressHub Data Context:\n{report_context}\n\n"
             f"User Question: {prompt}\n"
-            f"Concise Direct Answer:"
+            f"Answer:"
         )
 
-        # Try Grok API if configured
+        # 5. CALL AI PROVIDERS
         if settings.GROK_API_KEY:
             try:
                 async with httpx.AsyncClient(timeout=15.0) as client:
@@ -156,7 +139,7 @@ class AIService:
                                 {"role": "user", "content": full_prompt}
                             ],
                             "temperature": 0.1,
-                            "max_tokens": 120
+                            "max_tokens": 150
                         }
                     )
                     if resp.status_code == 200:
@@ -166,24 +149,12 @@ class AIService:
             except Exception as e:
                 logger.warning(f"Grok API error: {e}")
 
-        # Try Local Ollama endpoint
         base_url = settings.OLLAMA_BASE_URL.rstrip('/')
         ollama_gen_url = f"{base_url}/api/generate"
-        ollama_tags_url = f"{base_url}/api/tags"
         
         try:
             async with httpx.AsyncClient(timeout=25.0) as client:
                 target_model = settings.OLLAMA_MODEL or "llama3.1:latest"
-                try:
-                    tags_resp = await client.get(ollama_tags_url)
-                    if tags_resp.status_code == 200:
-                        installed_models = [m.get("name") for m in tags_resp.json().get("models", [])]
-                        if installed_models and target_model not in installed_models:
-                            llama_match = next((m for m in installed_models if "llama3.1" in m or "llama3" in m), None)
-                            target_model = llama_match if llama_match else installed_models[0]
-                except Exception as ex:
-                    logger.debug(f"Tags query error: {ex}")
-                
                 resp = await client.post(
                     ollama_gen_url,
                     json={
@@ -194,7 +165,7 @@ class AIService:
                         "options": {
                             "temperature": 0.1,
                             "top_p": 0.8,
-                            "num_predict": 120
+                            "num_predict": 150
                         }
                     }
                 )
@@ -206,19 +177,23 @@ class AIService:
         except Exception as e:
             logger.info(f"Ollama local instance not reachable: {e}")
 
-        # Fallback intelligent summary
-        fallback_res = cls._generate_fallback_summary(prompt, report_context, member_names)
+        # 6. FALLBACK LOGIC
+        fallback_res = cls._generate_fallback_summary(prompt, current_user.role, report_context)
         return cls._clean_markdown(fallback_res)
 
     @staticmethod
-    def _generate_fallback_summary(prompt: str, context: str, member_names: List[str]) -> str:
+    def _generate_fallback_summary(prompt: str, role: str, context: str) -> str:
         prompt_lower = prompt.lower()
-        if "blocker" in prompt_lower or "issue" in prompt_lower:
-            return "Blocker Summary: Focus review on flagged high-memory aggregation queries."
-        elif "achievement" in prompt_lower or "completed" in prompt_lower or "progress" in prompt_lower:
-            return "Progress Summary: Team achieved 100% sprint task completion across active projects."
+        if role == "member":
+            if "status" in prompt_lower:
+                return "Fallback: You have access to your own reports. (AI service unavailable to summarize)"
+            elif "other" in prompt_lower or "team" in prompt_lower or "everyone" in prompt_lower:
+                return "I can only provide information from your own reports and data."
+            return "Fallback: ProgressHub AI is currently offline. Please check your dashboard manually."
         else:
-            return "ProgressHub Assistant: Please specify the team member or project you would like progress details on."
+            if "status" in prompt_lower or "pending" in prompt_lower:
+                return "Fallback: Multiple reports pending review in the team queue. (AI service unavailable to summarize)"
+            return "Fallback: ProgressHub Team AI is currently offline. Please check the manager dashboard manually."
 
 
 

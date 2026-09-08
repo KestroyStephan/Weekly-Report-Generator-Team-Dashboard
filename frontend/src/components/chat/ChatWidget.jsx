@@ -1,14 +1,43 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Bot, Send, X, Sparkles, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
+import { Bot, Send, X, Sparkles, Mic, MicOff, Volume2, VolumeX, MessageCircle } from 'lucide-react';
 import ChatMessage from './ChatMessage';
 import { aiApi } from '../../api/aiApi';
+import { useAuthStore } from '../../store/authStore';
+
+const MEMBER_QUESTIONS = [
+  "What's my report status?",
+  "Summarize my week",
+  "Which goals are behind?",
+  "Show my blockers",
+  "What needs correction?",
+  "Show my recent reports",
+  "Help improve my report"
+];
+
+const MANAGER_QUESTIONS = [
+  "How is my team doing?",
+  "What needs my attention?",
+  "Show pending reports",
+  "What are the biggest blockers?",
+  "Which projects are at risk?",
+  "Show team progress",
+  "Summarize this week's reports",
+  "Show workload by project"
+];
 
 export default function ChatWidget() {
+  const { user } = useAuthStore();
   const [isOpen, setIsOpen] = useState(false);
+  
+  const isManager = user?.role === 'manager' || user?.role === 'admin';
+  const roleSubtitle = isManager ? "Team insights & reporting assistant" : "Your personal ProgressHub assistant";
+  const placeholderText = isManager ? "Ask about team progress, blockers, or workload..." : "Ask about your report, goals, or blockers...";
+  const quickQuestions = isManager ? MANAGER_QUESTIONS : MEMBER_QUESTIONS;
+
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      text: 'Hello! I am your ProgressHub Assistant. Ask me anything about team weekly reports, key achievements, or blockers! You can also listen to summary responses using voice assistance.'
+      text: `Hello! I am your ${isManager ? 'Team Analytics Assistant' : 'Personal ProgressHub Assistant'}. How can I help you today?`
     }
   ]);
   const [input, setInput] = useState('');
@@ -57,7 +86,6 @@ export default function ChatWidget() {
         setInput(transcript);
       };
       recognition.onerror = (err) => {
-        console.warn('Speech recognition error:', err);
         setIsListening(false);
       };
       recognition.onend = () => setIsListening(false);
@@ -65,21 +93,21 @@ export default function ChatWidget() {
       recognitionRef.current = recognition;
       recognition.start();
     } catch (e) {
-      console.error('Failed to initialize Speech Recognition:', e);
       setIsListening(false);
     }
   };
 
-  const handleSend = async (e) => {
+  const handleSend = async (e, textOverride = null) => {
     e?.preventDefault();
-    if (!input.trim() || isLoading) return;
+    const userQuestion = (textOverride || input).trim();
+    
+    if (!userQuestion || isLoading) return;
 
     if (isListening) {
       recognitionRef.current?.stop();
       setIsListening(false);
     }
 
-    const userQuestion = input.trim();
     setInput('');
     setMessages((prev) => [...prev, { role: 'user', text: userQuestion }]);
     setIsLoading(true);
@@ -118,7 +146,7 @@ export default function ChatWidget() {
           }}
           onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.08)'}
           onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
-          title="Open ProgressHub Voice Assistant"
+          title="Open AI Assistant"
         >
           <Bot size={26} />
         </button>
@@ -127,7 +155,7 @@ export default function ChatWidget() {
       {isOpen && (
         <div style={{
           width: '390px',
-          height: '530px',
+          height: '560px',
           backgroundColor: '#FFFFFF',
           borderRadius: 'var(--radius-lg)',
           boxShadow: '0 20px 40px rgba(0, 0, 0, 0.18)',
@@ -145,15 +173,17 @@ export default function ChatWidget() {
             alignItems: 'center',
             justifyContent: 'space-between'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Sparkles size={18} style={{ color: '#34D399' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ backgroundColor: 'rgba(255,255,255,0.1)', padding: '6px', borderRadius: '8px' }}>
+                <Bot size={20} style={{ color: '#34D399' }} />
+              </div>
               <div>
-                <h4 style={{ fontSize: '0.9375rem', fontWeight: '700', color: '#FFFFFF', margin: 0 }}>ProgressHub Assistant</h4>
+                <h4 style={{ fontSize: '0.9375rem', fontWeight: '700', color: '#FFFFFF', margin: 0 }}>AI Assistant</h4>
+                <div style={{ fontSize: '0.7rem', color: '#A7F3D0', opacity: 0.9 }}>{roleSubtitle}</div>
               </div>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {/* Auto Voice Mode Toggle */}
               <button
                 type="button"
                 onClick={() => setAutoVoice(!autoVoice)}
@@ -201,11 +231,58 @@ export default function ChatWidget() {
             {isLoading && (
               <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)', fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Sparkles size={14} className="animate-spin" style={{ color: '#0D8A6A' }} />
-                <span>Ollama AI is generating team summary...</span>
+                <span>AI is thinking...</span>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
+
+          {/* Quick Suggestions */}
+          {!isLoading && messages.length < 3 && (
+            <div style={{
+              padding: '8px 12px',
+              backgroundColor: '#FFFFFF',
+              borderTop: '1px solid var(--color-card-border)',
+              display: 'flex',
+              gap: '8px',
+              overflowX: 'auto',
+              whiteSpace: 'nowrap',
+              scrollbarWidth: 'none', // Firefox
+              msOverflowStyle: 'none', // IE/Edge
+            }}>
+              {quickQuestions.map((q, idx) => (
+                <button
+                  key={idx}
+                  onClick={(e) => handleSend(e, q)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    padding: '6px 10px',
+                    backgroundColor: '#F1F5F9',
+                    border: '1px solid #E2E8F0',
+                    borderRadius: '16px',
+                    fontSize: '0.75rem',
+                    color: '#334155',
+                    cursor: 'pointer',
+                    flexShrink: 0,
+                    transition: 'all 0.15s ease'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.backgroundColor = '#E2E8F0';
+                    e.currentTarget.style.borderColor = '#CBD5E1';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.backgroundColor = '#F1F5F9';
+                    e.currentTarget.style.borderColor = '#E2E8F0';
+                  }}
+                >
+                  <MessageCircle size={12} style={{ color: '#0D8A6A' }} />
+                  {q}
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Input Form with Voice Dictation */}
           <form
@@ -223,7 +300,7 @@ export default function ChatWidget() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={isListening ? "Listening... Speak now..." : "Ask about team progress or blockers..."}
+              placeholder={isListening ? "Listening... Speak now..." : placeholderText}
               style={{
                 flexGrow: 1,
                 padding: '8px 12px',
@@ -235,7 +312,6 @@ export default function ChatWidget() {
               }}
             />
 
-            {/* Mic Dictation Button */}
             <button
               type="button"
               onClick={toggleListening}
@@ -257,7 +333,6 @@ export default function ChatWidget() {
               {isListening ? <MicOff size={16} /> : <Mic size={16} />}
             </button>
 
-            {/* Send Button */}
             <button
               type="submit"
               disabled={isLoading || !input.trim()}
