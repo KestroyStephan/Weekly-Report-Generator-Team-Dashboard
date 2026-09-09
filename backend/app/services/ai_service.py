@@ -127,7 +127,7 @@ class AIService:
             try:
                 is_groq = settings.GROK_API_KEY.startswith("gsk_")
                 api_url = "https://api.groq.com/openai/v1/chat/completions" if is_groq else "https://api.x.ai/v1/chat/completions"
-                model_name = "llama-3.1-8b-instant" if is_groq else (settings.GROK_MODEL or "grok-beta")
+                model_name = "openai/gpt-oss-20b" if is_groq else (settings.GROK_MODEL or "grok-beta")
                 
                 async with httpx.AsyncClient(timeout=15.0) as client:
                     resp = await client.post(
