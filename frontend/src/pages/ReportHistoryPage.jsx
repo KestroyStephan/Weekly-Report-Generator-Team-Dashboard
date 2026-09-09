@@ -15,6 +15,7 @@ export default function ReportHistoryPage() {
   const [projects, setProjects] = useState([]);
   const [statusFilter, setStatusFilter] = useState('');
   const [projectFilter, setProjectFilter] = useState('');
+  const [dateFilter, setDateFilter] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -24,7 +25,11 @@ export default function ReportHistoryPage() {
       setLoading(true);
       try {
         const [repData, projData] = await Promise.all([
-          reportsApi.getReports({ status: statusFilter || undefined, project_id: projectFilter || undefined }),
+          reportsApi.getReports({ 
+            status: statusFilter || undefined, 
+            project_id: projectFilter || undefined,
+            week_start_date: dateFilter || undefined
+          }),
           projectsApi.getProjects()
         ]);
         setReports(repData);
@@ -34,7 +39,7 @@ export default function ReportHistoryPage() {
       }
     }
     loadReports();
-  }, [statusFilter, projectFilter]);
+  }, [statusFilter, projectFilter, dateFilter]);
 
   const filteredReports = reports.filter((rep) => {
     if (!searchTerm) return true;
@@ -50,16 +55,19 @@ export default function ReportHistoryPage() {
         showSearch={true}
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
-        filters={{ status: statusFilter, project_id: projectFilter }}
+        filters={{ status: statusFilter, project_id: projectFilter, date: dateFilter }}
         onFilterChange={(key, value) => {
           if (key === 'reset') {
             setStatusFilter('');
             setProjectFilter('');
+            setDateFilter('');
             setSearchTerm('');
           } else if (key === 'status') {
             setStatusFilter(value);
           } else if (key === 'project_id') {
             setProjectFilter(value);
+          } else if (key === 'date') {
+            setDateFilter(value);
           }
         }}
         projects={projects}

@@ -98,6 +98,26 @@ export default function FilterBar({
             ]}
           />
 
+          {/* Date Filter */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '0.875rem', fontWeight: 500, color: '#64748B' }}>Date:</span>
+            <input
+              type="date"
+              value={filters.date || ''}
+              onChange={(e) => onFilterChange('date', e.target.value)}
+              style={{
+                padding: '10px 14px',
+                borderRadius: '12px',
+                border: '1.5px solid #CBD5E1',
+                fontSize: '0.875rem',
+                outline: 'none',
+                backgroundColor: '#FFFFFF',
+                color: '#0F2942',
+                cursor: 'pointer'
+              }}
+            />
+          </div>
+
           {/* Users Dropdown */}
           {members.length > 0 && (
             <CustomDropdown
